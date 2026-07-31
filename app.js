@@ -4,31 +4,40 @@ const sinResultadosTitulo = document.querySelector("#sin-resultados-titulo");
 const sinResultadosTexto = document.querySelector("#sin-resultados-texto");
 const buscador = document.querySelector("#buscador");
 const filtrosCatalogo = document.querySelector("#filtros-catalogo");
-const seccionAccesorios = document.querySelector("#seccion-accesorios");
-const listaAccesorios = document.querySelector("#lista-accesorios");
+const filtrosAccesorios = document.querySelector("#filtros-accesorios");
 const whatsappFlotante = document.querySelector("#whatsapp-flotante");
 const visor = document.querySelector("#visor");
 const imagenAmpliada = document.querySelector("#imagen-ampliada");
 const pieImagen = document.querySelector("#pie-imagen");
 const cerrarVisor = document.querySelector("#cerrar-visor");
-const FORMATOS_IMAGEN = [
-  "jpg",
-  "jpeg",
-  "png",
-  "webp",
-  "JPG",
-  "JPEG",
-  "PNG",
-  "WEBP",
+const visorVideo = document.querySelector("#visor-video");
+const videoAmpliado = document.querySelector("#video-ampliado");
+const pieVideo = document.querySelector("#pie-video");
+const cerrarVideo = document.querySelector("#cerrar-video");
+
+const FORMATOS_IMAGEN = ["jpg", "jpeg", "png", "webp", "JPG", "JPEG", "PNG", "WEBP"];
+
+const FILTROS_PRINCIPALES = [
+  ["todos", "Todos"],
+  ["bettas", "Bettas"],
+  ["parejas", "Parejas"],
+  ["accesorios", "Accesorios"],
+  ["disponibles", "Disponibles"],
+  ["vendidos", "Vendidos"],
 ];
-const CATEGORIAS = [
-  { id: "halfmoon", nombre: "Halfmoon", terminos: ["halfmoon"] },
-  { id: "koi", nombre: "Koi", terminos: ["koi"] },
-  { id: "hell-boy", nombre: "Hell Boy", terminos: ["hell boy", "hellboy"] },
-  { id: "candy", nombre: "Candy", terminos: ["candy"] },
-  { id: "parejas", nombre: "Parejas", terminos: ["pareja", "parejas"] },
-  { id: "accesorios", nombre: "Accesorios", terminos: ["accesorio", "accesorios"] },
+
+const FILTROS_ACCESORIOS = [
+  ["todos-accesorios", "Todos los accesorios", ""],
+  ["acuario", "Acuarios", "acuario"],
+  ["filtro", "Filtros", "filtro"],
+  ["betta-stick", "Betta Stick", "betta-stick"],
+  ["alimentacion", "Alimentacion", "alimentacion"],
+  ["decoracion", "Decoracion", "decoracion"],
 ];
+
+let filtroActivo = "todos";
+let filtroAccesorioActivo = "todos-accesorios";
+const tarjetasCatalogo = [];
 
 function normalizarTexto(valor) {
   return String(valor || "")
@@ -38,42 +47,62 @@ function normalizarTexto(valor) {
     .trim();
 }
 
-function textoBuscable(pez) {
-  return normalizarTexto(
-    [
-      pez.codigo,
-      pez.variedad,
-      pez.nombre,
-      pez.color,
-      pez.descripcion,
-      pez.categoria,
-      pez.tipo,
-    ].join(" "),
-  );
-}
-
-function tipoDelProducto(producto) {
+function categoriaProducto(producto) {
+  const categoria = normalizarTexto(producto.categoria);
+  if (categoria === "betta" || categoria === "pareja" || categoria === "accesorio") return categoria;
   const tipo = normalizarTexto(producto.tipo);
-  return ["individual", "pareja", "accesorio"].includes(tipo)
-    ? tipo
-    : "individual";
+  if (tipo === "pareja" || tipo === "accesorio") return tipo;
+  return "betta";
 }
 
-function categoriasDelProducto(pez) {
-  const texto = textoBuscable(pez);
-  const categorias = CATEGORIAS.filter((categoria) =>
-    categoria.terminos.some((termino) => texto.includes(termino)),
-  ).map((categoria) => categoria.id);
-  const tipo = tipoDelProducto(pez);
+function estadoProducto(producto) {
+  return normalizarTexto(producto.estado || "disponible");
+}
 
-  if (tipo === "pareja" && !categorias.includes("parejas")) {
-    categorias.push("parejas");
-  }
-  if (tipo === "accesorio" && !categorias.includes("accesorios")) {
-    categorias.push("accesorios");
-  }
+function tipoAccesorio(producto) {
+  return normalizarTexto(producto.tipoAccesorio || "otro") || "otro";
+}
 
-  return categorias;
+function nombreProducto(producto) {
+  return String(producto.nombre || producto.variedad || producto.codigo).trim();
+}
+
+function todosLosProductos() {
+  const bettas = typeof BETTAS !== "undefined" && Array.isArray(BETTAS) ? BETTAS : [];
+  const parejas = typeof PAREJAS !== "undefined" && Array.isArray(PAREJAS) ? PAREJAS : [];
+  const accesorios = typeof ACCESORIOS !== "undefined" && Array.isArray(ACCESORIOS) ? ACCESORIOS : [];
+  const legado = typeof PECES !== "undefined" && Array.isArray(PECES) ? PECES : [];
+  return [...bettas, ...parejas, ...accesorios, ...legado];
+}
+
+function productoVisible(producto) {
+  const categoria = categoriaProducto(producto);
+  const estado = estadoProducto(producto);
+  if (categoria === "accesorio") return estado === "disponible" || estado === "agotado";
+  return estado === "disponible" || estado === "vendido";
+}
+
+function pesoOrden(producto) {
+  const categoria = categoriaProducto(producto);
+  const estado = estadoProducto(producto);
+  if ((categoria === "betta" || categoria === "pareja") && estado === "disponible") return 1;
+  if ((categoria === "betta" || categoria === "pareja") && estado === "vendido") return 2;
+  if (categoria === "accesorio" && estado === "disponible") return 3;
+  if (categoria === "accesorio" && estado === "agotado") return 4;
+  return 9;
+}
+
+function textoBuscable(producto) {
+  return normalizarTexto([
+    producto.codigo,
+    producto.nombre,
+    producto.variedad,
+    producto.descripcion,
+    producto.sexo,
+    producto.categoria,
+    producto.tipoAccesorio,
+    producto.estado,
+  ].join(" "));
 }
 
 function enlaceWhatsApp(mensaje) {
@@ -82,14 +111,12 @@ function enlaceWhatsApp(mensaje) {
 
 function enlaceTikTokValido(valor) {
   if (typeof valor !== "string" || valor.trim() === "") return null;
-
   try {
     const url = new URL(valor.trim());
     const dominio = url.hostname.toLowerCase();
-    const esTikTok =
-      dominio === "tiktok.com" ||
-      dominio.endsWith(".tiktok.com");
-    return url.protocol === "https:" && esTikTok ? url.href : null;
+    return url.protocol === "https:" && (dominio === "tiktok.com" || dominio.endsWith(".tiktok.com"))
+      ? url.href
+      : null;
   } catch {
     return null;
   }
@@ -103,59 +130,22 @@ function numeroPrecio(valor) {
 function formatoPrecio(valor) {
   const numero = numeroPrecio(valor);
   if (numero === null) return String(valor || "");
-
-  return new Intl.NumberFormat("es-ES", {
-    maximumFractionDigits: 2,
-  }).format(numero);
-}
-
-function datosPrecio(producto) {
-  const precio = numeroPrecio(producto.precio);
-  const precioAnterior = numeroPrecio(producto.precioAnterior);
-  const tieneOferta =
-    precio !== null &&
-    precioAnterior !== null &&
-    precioAnterior > precio;
-  const descuento = tieneOferta
-    ? Math.round(((precioAnterior - precio) / precioAnterior) * 100)
-    : null;
-
-  return {
-    precio,
-    precioAnterior,
-    tieneOferta,
-    descuento,
-  };
+  return new Intl.NumberFormat("es-ES", { maximumFractionDigits: 2 }).format(numero);
 }
 
 function htmlPrecio(producto) {
-  const precio = datosPrecio(producto);
-
-  if (!precio.tieneOferta) {
-    return `<span class="precio">${formatoPrecio(producto.precio)} €</span>`;
-  }
-
+  const precio = numeroPrecio(producto.precio);
+  const precioAnterior = numeroPrecio(producto.precioAnterior);
+  const tieneOferta = precio !== null && precioAnterior !== null && precioAnterior > precio;
+  if (!tieneOferta) return `<span class="precio">${formatoPrecio(producto.precio)} €</span>`;
+  const descuento = Math.round(((precioAnterior - precio) / precioAnterior) * 100);
   return `
     <div class="bloque-precio precio-oferta">
-      <span class="precio-anterior">${formatoPrecio(precio.precioAnterior)} €</span>
-      <span class="precio">${formatoPrecio(precio.precio)} €</span>
-      <span class="etiqueta-oferta">-${precio.descuento}%</span>
+      <span class="precio-anterior">${formatoPrecio(precioAnterior)} €</span>
+      <span class="precio">${formatoPrecio(precio)} €</span>
+      <span class="etiqueta-oferta">-${descuento}%</span>
     </div>
   `;
-}
-
-function abrirVisor(pez, foto) {
-  imagenAmpliada.src = foto;
-  imagenAmpliada.alt = `Betta ${pez.codigo}, ${pez.variedad}`;
-  pieImagen.textContent = `${pez.codigo} · ${pez.variedad}`;
-  visor.showModal();
-  document.body.classList.add("visor-abierto");
-}
-
-function cerrarImagen() {
-  visor.close();
-  document.body.classList.remove("visor-abierto");
-  imagenAmpliada.src = "";
 }
 
 function comprobarImagen(ruta) {
@@ -177,35 +167,24 @@ async function detectarPrimerFormato(nombreBase) {
 }
 
 async function detectarFotos(codigo) {
-  const codigoSeguro = String(codigo).trim();
-  const posiciones = Array.from(
-    { length: 5 },
-    (_, indice) => `${codigoSeguro}-${indice + 1}`,
-  );
-  const resultados = await Promise.all(
-    posiciones.map(detectarPrimerFormato),
-  );
+  const posiciones = Array.from({ length: 5 }, (_, indice) => `${String(codigo).trim()}-${indice + 1}`);
+  const resultados = await Promise.all(posiciones.map(detectarPrimerFormato));
   return resultados.filter(Boolean);
 }
 
 async function cargarImagenesPrincipales() {
-  const [logo, portada] = await Promise.all([
-    detectarPrimerFormato("logo"),
-    detectarPrimerFormato("portada"),
-  ]);
-
+  const [logo, portada] = await Promise.all([detectarPrimerFormato("logo"), detectarPrimerFormato("portada")]);
   if (logo) {
     document.querySelectorAll('[data-imagen-automatica="logo"]').forEach((imagen) => {
       imagen.src = logo;
     });
-
     const favicon = document.querySelector("#favicon");
     if (favicon) {
+      const extension = logo.split(".").pop();
       favicon.href = logo;
-      favicon.type = `image/${logo.split(".").pop() === "jpg" ? "jpeg" : logo.split(".").pop()}`;
+      favicon.type = `image/${extension === "jpg" ? "jpeg" : extension}`;
     }
   }
-
   if (portada) {
     document.querySelectorAll('[data-imagen-automatica="portada"]').forEach((imagen) => {
       imagen.src = portada;
@@ -213,145 +192,135 @@ async function cargarImagenesPrincipales() {
   }
 }
 
-async function crearTarjeta(pez) {
-  const articulo = document.createElement("article");
-  const tipo = tipoDelProducto(pez);
-  const esAccesorio = tipo === "accesorio";
-  const esPareja = tipo === "pareja";
-  const estaAgotado =
-    esAccesorio && normalizarTexto(pez.estado) === "agotado";
-  const nombreProducto = String(pez.nombre || pez.variedad || pez.codigo).trim();
-  const claseTipo = `tarjeta-${tipo}`;
-  articulo.className = `tarjeta ${claseTipo}`;
-  articulo.dataset.codigo = pez.codigo;
-  articulo.dataset.tipo = tipo;
+function abrirVisor(producto, foto) {
+  const nombre = nombreProducto(producto);
+  imagenAmpliada.src = foto;
+  imagenAmpliada.alt = `${nombre}, ${producto.codigo}`;
+  pieImagen.textContent = `${producto.codigo} · ${nombre}`;
+  visor.showModal();
+  document.body.classList.add("visor-abierto");
+}
 
-  const mensaje = esAccesorio
-    ? estaAgotado
-      ? `Hola, quiero consultar el accesorio ${nombreProducto} (${pez.codigo}). ¿Cuándo volverá a estar disponible?`
-      : `Hola, estoy interesado en el accesorio ${nombreProducto} (${pez.codigo}). ¿Sigue disponible?`
-    : `Hola, estoy interesado en ${esPareja ? "la pareja" : "el Betta"} ${pez.codigo}. ¿Sigue disponible?`;
-  const descripcion =
-    String(pez.descripcion || "").trim() ||
-    (esAccesorio
-      ? "Producto recomendado para el cuidado de bettas."
-      : "Coloración según fotografías.");
-  const videoTikTok = enlaceTikTokValido(pez.video);
-  const fotosDetectadas = await detectarFotos(pez.codigo);
-  const fotos =
-    fotosDetectadas.length > 0
-      ? fotosDetectadas
-      : ["imagenes/betta-destacado.svg"];
+function cerrarImagen() {
+  visor.close();
+  document.body.classList.remove("visor-abierto");
+  imagenAmpliada.src = "";
+}
+
+function abrirVideo(producto, ruta) {
+  videoAmpliado.src = ruta;
+  videoAmpliado.load();
+  pieVideo.textContent = `${producto.codigo} · ${nombreProducto(producto)}`;
+  visorVideo.showModal();
+  document.body.classList.add("visor-abierto");
+}
+
+function cerrarVideoLocal() {
+  videoAmpliado.pause();
+  videoAmpliado.currentTime = 0;
+  videoAmpliado.removeAttribute("src");
+  videoAmpliado.load();
+  visorVideo.close();
+  document.body.classList.remove("visor-abierto");
+}
+
+function estadoVisual(producto) {
+  const categoria = categoriaProducto(producto);
+  const estado = estadoProducto(producto);
+  if (categoria === "accesorio" && estado === "agotado") return ["AGOTADO", "estado-agotado"];
+  if ((categoria === "betta" || categoria === "pareja") && estado === "vendido") return ["SOLD OUT", "estado-vendido"];
+  return ["Disponible", "estado-disponible"];
+}
+
+function mensajeWhatsApp(producto) {
+  const categoria = categoriaProducto(producto);
+  const estado = estadoProducto(producto);
+  const nombre = nombreProducto(producto);
+  if ((categoria === "betta" || categoria === "pareja") && estado === "vendido") {
+    return `Hola, he visto el ejemplar ${producto.codigo}, que ya esta vendido. ¿Teneis algun ejemplar similar disponible?`;
+  }
+  if (categoria === "accesorio") return `Hola, quiero consultar la disponibilidad del accesorio ${nombre} (${producto.codigo}).`;
+  if (categoria === "pareja") return `Hola, estoy interesado en la pareja ${producto.codigo}. ¿Sigue disponible?`;
+  return `Hola, estoy interesado en el Betta ${producto.codigo}. ¿Sigue disponible?`;
+}
+
+function textoBoton(producto) {
+  const categoria = categoriaProducto(producto);
+  const estado = estadoProducto(producto);
+  if ((categoria === "betta" || categoria === "pareja") && estado === "vendido") return "Consultar ejemplares similares";
+  if (categoria === "accesorio") return "Consultar disponibilidad";
+  return "Consultar por WhatsApp";
+}
+
+async function crearTarjeta(producto) {
+  const articulo = document.createElement("article");
+  const categoria = categoriaProducto(producto);
+  const estado = estadoProducto(producto);
+  const vendido = (categoria === "betta" || categoria === "pareja") && estado === "vendido";
+  const agotado = categoria === "accesorio" && estado === "agotado";
+  const nombre = nombreProducto(producto);
+  const descripcion = String(producto.descripcion || "").trim() || (categoria === "accesorio" ? "Producto recomendado para el cuidado de bettas." : "Coloracion segun fotografias.");
+  const videoLocal = typeof producto.videoLocal === "string" && producto.videoLocal.trim() ? producto.videoLocal.trim() : "";
+  const videoTikTok = enlaceTikTokValido(producto.videoTikTok || producto.video);
+  const fotosDetectadas = await detectarFotos(producto.codigo);
+  const fotos = fotosDetectadas.length > 0 ? fotosDetectadas : ["imagenes/betta-destacado.svg"];
   const tieneGaleria = fotos.length > 1;
+  const [textoEstado, claseEstado] = estadoVisual(producto);
   let fotoActual = 0;
   let inicioDeslizamiento = 0;
   let fueDeslizamiento = false;
   let gestoTactilActivo = false;
 
+  articulo.className = `tarjeta tarjeta-${categoria}${vendido ? " tarjeta-vendida" : ""}${agotado ? " tarjeta-agotada" : ""}`;
+  articulo.dataset.codigo = producto.codigo;
+  articulo.dataset.categoria = categoria;
+  articulo.dataset.estado = estado;
+
   articulo.innerHTML = `
     <div class="galeria ${tieneGaleria ? "galeria-multiple" : "galeria-unica"}">
-      <button
-        class="foto-contenedor"
-        type="button"
-        aria-label="Ampliar imagen 1 de ${fotos.length} de ${nombreProducto}"
-        title="Ampliar imagen"
-      >
-        <img src="${fotos[0]}" alt="${nombreProducto}, foto 1" loading="lazy" draggable="false">
-        <span class="codigo">${pez.codigo}</span>
+      <button class="foto-contenedor" type="button" aria-label="Ampliar imagen 1 de ${fotos.length} de ${nombre}" title="Ampliar imagen">
+        <img src="${fotos[0]}" alt="${nombre}, foto 1" loading="lazy" draggable="false">
+        <span class="codigo">${producto.codigo}</span>
         <span class="ampliar-icono" aria-hidden="true">＋</span>
         ${tieneGaleria ? `<span class="contador-fotos">1 / ${fotos.length}</span>` : ""}
       </button>
-      ${
-        tieneGaleria
-          ? `
-            <button class="galeria-flecha galeria-anterior" type="button" aria-label="Foto anterior">‹</button>
-            <button class="galeria-flecha galeria-siguiente" type="button" aria-label="Foto siguiente">›</button>
-            <div class="miniaturas" aria-label="Fotografías de ${nombreProducto}">
-              ${fotos
-                .map(
-                  (foto, indice) => `
-                    <button
-                      class="miniatura ${indice === 0 ? "activa" : ""}"
-                      type="button"
-                      data-indice="${indice}"
-                      aria-label="Mostrar foto ${indice + 1} de ${fotos.length}"
-                      aria-current="${indice === 0 ? "true" : "false"}"
-                    >
-                      <img src="${foto}" alt="" loading="lazy">
-                    </button>
-                  `,
-                )
-                .join("")}
-            </div>
-          `
-          : ""
-      }
+      ${tieneGaleria ? `
+        <button class="galeria-flecha galeria-anterior" type="button" aria-label="Foto anterior">‹</button>
+        <button class="galeria-flecha galeria-siguiente" type="button" aria-label="Foto siguiente">›</button>
+        <div class="miniaturas" aria-label="Fotografias de ${nombre}">
+          ${fotos.map((foto, indice) => `
+            <button class="miniatura ${indice === 0 ? "activa" : ""}" type="button" data-indice="${indice}" aria-label="Mostrar foto ${indice + 1} de ${fotos.length}" aria-current="${indice === 0 ? "true" : "false"}">
+              <img src="${foto}" alt="" loading="lazy">
+            </button>
+          `).join("")}
+        </div>
+      ` : ""}
     </div>
     <div class="tarjeta-cuerpo">
       <div class="tarjeta-etiquetas">
-        <span class="variedad-etiqueta">${esAccesorio ? "Accesorio" : esPareja ? "Pareja" : pez.variedad}</span>
-        <span class="estado ${estaAgotado ? "estado-agotado" : "estado-disponible"}">
-          <span aria-hidden="true"></span> ${estaAgotado ? "Agotado" : "Disponible"}
-        </span>
+        <span class="variedad-etiqueta">${categoria === "accesorio" ? "Accesorio" : categoria === "pareja" ? "Pareja" : producto.variedad}</span>
+        <span class="estado ${claseEstado}"><span aria-hidden="true"></span> ${textoEstado}</span>
       </div>
       <div class="tarjeta-cabecera">
-        <h3>${nombreProducto}</h3>
-        ${htmlPrecio(pez)}
+        <h3>${nombre}</h3>
+        ${htmlPrecio(producto)}
       </div>
       <dl class="ficha-datos">
-        <div>
-          <dt>Código</dt>
-          <dd>${pez.codigo}</dd>
-        </div>
-        ${
-          esAccesorio
-            ? `
-              <div>
-                <dt>Tipo</dt>
-                <dd>Accesorio</dd>
-              </div>
-            `
-            : `
-              <div>
-                <dt>${esPareja ? "Composición" : "Sexo"}</dt>
-                <dd>${esPareja ? pez.sexo || "Macho y hembra" : pez.sexo}</dd>
-              </div>
-            `
+        <div><dt>Codigo</dt><dd>${producto.codigo}</dd></div>
+        ${categoria === "accesorio"
+          ? `<div><dt>Tipo</dt><dd>${tipoAccesorio(producto).replace("-", " ")}</dd></div>`
+          : `<div><dt>${categoria === "pareja" ? "Composicion" : "Sexo"}</dt><dd>${producto.sexo || (categoria === "pareja" ? "Macho + Hembra" : "Macho")}</dd></div>`
         }
-        <div class="dato-descripcion">
-          <dt>${esAccesorio ? "Descripción" : "Color / descripción"}</dt>
-          <dd>${descripcion}</dd>
-        </div>
+        <div class="dato-descripcion"><dt>${categoria === "accesorio" ? "Descripcion" : "Color / descripcion"}</dt><dd>${descripcion}</dd></div>
       </dl>
       <div class="entrega-info">
-        <span>📦 Disponible para envío.</span>
+        <span>📦 Disponible para envio.</span>
         <span>📍 Recogida en Barcelona.</span>
       </div>
       <div class="acciones-tarjeta">
-        ${
-          videoTikTok
-            ? `
-              <a
-                class="boton boton-video"
-                href="${videoTikTok}"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Ver vídeo en TikTok de ${nombreProducto}"
-              >
-                Ver vídeo en TikTok
-              </a>
-            `
-            : ""
-        }
-        <a
-          class="boton boton-tarjeta"
-          href="${enlaceWhatsApp(mensaje)}"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Consultar por WhatsApp ${nombreProducto}"
-        >
-          Consultar por WhatsApp
-        </a>
+        ${videoLocal ? `<button class="boton boton-video boton-video-local" type="button">Ver video</button>` : ""}
+        ${videoTikTok ? `<a class="boton boton-video" href="${videoTikTok}" target="_blank" rel="noopener noreferrer" aria-label="Ver video en TikTok de ${nombre}">Ver video en TikTok</a>` : ""}
+        <a class="boton ${vendido ? "boton-secundario" : "boton-tarjeta"}" href="${enlaceWhatsApp(mensajeWhatsApp(producto))}" target="_blank" rel="noopener noreferrer">${textoBoton(producto)}</a>
       </div>
     </div>
   `;
@@ -362,15 +331,10 @@ async function crearTarjeta(pez) {
   function mostrarFoto(indice) {
     fotoActual = (indice + fotos.length) % fotos.length;
     imagenPrincipal.src = fotos[fotoActual];
-    imagenPrincipal.alt = `${nombreProducto}, foto ${fotoActual + 1}`;
-    fotoPrincipal.setAttribute(
-      "aria-label",
-      `Ampliar imagen ${fotoActual + 1} de ${fotos.length} de ${nombreProducto}`,
-    );
-
+    imagenPrincipal.alt = `${nombre}, foto ${fotoActual + 1}`;
+    fotoPrincipal.setAttribute("aria-label", `Ampliar imagen ${fotoActual + 1} de ${fotos.length} de ${nombre}`);
     const contadorFotos = articulo.querySelector(".contador-fotos");
     if (contadorFotos) contadorFotos.textContent = `${fotoActual + 1} / ${fotos.length}`;
-
     articulo.querySelectorAll(".miniatura").forEach((miniatura, indiceMiniatura) => {
       const activa = indiceMiniatura === fotoActual;
       miniatura.classList.toggle("activa", activa);
@@ -383,176 +347,133 @@ async function crearTarjeta(pez) {
       fueDeslizamiento = false;
       return;
     }
-    abrirVisor(pez, fotos[fotoActual]);
+    abrirVisor(producto, fotos[fotoActual]);
   });
 
+  articulo.querySelector(".boton-video-local")?.addEventListener("click", () => abrirVideo(producto, videoLocal));
+
   if (tieneGaleria) {
-    articulo
-      .querySelector(".galeria-anterior")
-      .addEventListener("click", () => mostrarFoto(fotoActual - 1));
-    articulo
-      .querySelector(".galeria-siguiente")
-      .addEventListener("click", () => mostrarFoto(fotoActual + 1));
-
+    articulo.querySelector(".galeria-anterior").addEventListener("click", () => mostrarFoto(fotoActual - 1));
+    articulo.querySelector(".galeria-siguiente").addEventListener("click", () => mostrarFoto(fotoActual + 1));
     articulo.querySelectorAll(".miniatura").forEach((miniatura) => {
-      miniatura.addEventListener("click", () => {
-        mostrarFoto(Number(miniatura.dataset.indice));
-      });
+      miniatura.addEventListener("click", () => mostrarFoto(Number(miniatura.dataset.indice)));
     });
-
     fotoPrincipal.addEventListener("pointerdown", (evento) => {
       if (evento.pointerType === "touch") return;
       inicioDeslizamiento = evento.clientX;
       fueDeslizamiento = false;
-      if (fotoPrincipal.setPointerCapture) {
-        fotoPrincipal.setPointerCapture(evento.pointerId);
-      }
+      if (fotoPrincipal.setPointerCapture) fotoPrincipal.setPointerCapture(evento.pointerId);
     });
-
     fotoPrincipal.addEventListener("pointermove", (evento) => {
       if (evento.pointerType === "touch") return;
-      if (Math.abs(evento.clientX - inicioDeslizamiento) > 12) {
-        fueDeslizamiento = true;
-      }
+      if (Math.abs(evento.clientX - inicioDeslizamiento) > 12) fueDeslizamiento = true;
     });
-
     fotoPrincipal.addEventListener("pointerup", (evento) => {
       if (evento.pointerType === "touch") return;
       const distancia = evento.clientX - inicioDeslizamiento;
-      if (fotoPrincipal.hasPointerCapture?.(evento.pointerId)) {
-        fotoPrincipal.releasePointerCapture(evento.pointerId);
-      }
+      if (fotoPrincipal.hasPointerCapture?.(evento.pointerId)) fotoPrincipal.releasePointerCapture(evento.pointerId);
       if (Math.abs(distancia) >= 45) {
         fueDeslizamiento = true;
         mostrarFoto(distancia < 0 ? fotoActual + 1 : fotoActual - 1);
       }
     });
-
     fotoPrincipal.addEventListener("pointercancel", () => {
       inicioDeslizamiento = 0;
       fueDeslizamiento = false;
     });
-
-    fotoPrincipal.addEventListener(
-      "touchstart",
-      (evento) => {
-        inicioDeslizamiento = evento.changedTouches[0].clientX;
-        gestoTactilActivo = true;
-        fueDeslizamiento = false;
-      },
-      { passive: true },
-    );
-
-    fotoPrincipal.addEventListener(
-      "touchend",
-      (evento) => {
-        if (!gestoTactilActivo) return;
-        gestoTactilActivo = false;
-        const distancia = evento.changedTouches[0].clientX - inicioDeslizamiento;
-        if (Math.abs(distancia) < 45) return;
-        fueDeslizamiento = true;
-        mostrarFoto(distancia < 0 ? fotoActual + 1 : fotoActual - 1);
-      },
-      { passive: true },
-    );
+    fotoPrincipal.addEventListener("touchstart", (evento) => {
+      inicioDeslizamiento = evento.changedTouches[0].clientX;
+      gestoTactilActivo = true;
+      fueDeslizamiento = false;
+    }, { passive: true });
+    fotoPrincipal.addEventListener("touchend", (evento) => {
+      if (!gestoTactilActivo) return;
+      gestoTactilActivo = false;
+      const distancia = evento.changedTouches[0].clientX - inicioDeslizamiento;
+      if (Math.abs(distancia) < 45) return;
+      fueDeslizamiento = true;
+      mostrarFoto(distancia < 0 ? fotoActual + 1 : fotoActual - 1);
+    }, { passive: true });
   }
 
   return articulo;
 }
 
-const productosVisibles = PECES.filter((producto) => {
-  const estado = normalizarTexto(producto.estado);
-  const tipo = tipoDelProducto(producto);
-
-  if (tipo === "accesorio") {
-    return estado === "disponible" || estado === "agotado";
-  }
-
-  return estado === "disponible";
+const productosOrdenados = todosLosProductos().filter(productoVisible).sort((a, b) => {
+  const diferencia = pesoOrden(a) - pesoOrden(b);
+  if (diferencia !== 0) return diferencia;
+  return String(a.codigo).localeCompare(String(b.codigo), "es");
 });
-const pecesDisponibles = productosVisibles.filter(
-  (producto) => tipoDelProducto(producto) !== "accesorio",
-);
-const accesoriosVisibles = productosVisibles.filter(
-  (producto) => tipoDelProducto(producto) === "accesorio",
-);
-let categoriaActiva = "todos";
-const catalogoRenderizado = [];
 
-function mostrarEstadoVacio(hayBusqueda) {
-  sinResultados.hidden = false;
+function coincideFiltro(producto) {
+  const categoria = categoriaProducto(producto);
+  const estado = estadoProducto(producto);
+  if (filtroActivo === "todos") return true;
+  if (filtroActivo === "bettas") return categoria === "betta";
+  if (filtroActivo === "parejas") return categoria === "pareja";
+  if (filtroActivo === "accesorios") return categoria === "accesorio";
+  if (filtroActivo === "disponibles") return estado === "disponible";
+  if (filtroActivo === "vendidos") return (categoria === "betta" || categoria === "pareja") && estado === "vendido";
+  return true;
+}
 
-  if (hayBusqueda) {
-    sinResultadosTitulo.textContent = "No encontramos coincidencias";
-    sinResultadosTexto.textContent =
-      "Prueba con otro código, variedad, color o categoría.";
-    return;
-  }
-
-  sinResultadosTitulo.textContent = "Próximamente habrá nuevos bettas";
-  sinResultadosTexto.textContent =
-    "Escríbeme por WhatsApp para consultar las próximas novedades.";
+function coincideAccesorio(producto) {
+  if (filtroActivo !== "accesorios") return true;
+  if (filtroAccesorioActivo === "todos-accesorios") return true;
+  return categoriaProducto(producto) === "accesorio" && tipoAccesorio(producto) === filtroAccesorioActivo;
 }
 
 function aplicarFiltros() {
   const consulta = normalizarTexto(buscador.value);
   let visibles = 0;
-  let cantidadAccesoriosVisibles = 0;
-
-  catalogoRenderizado.forEach(({ tarjeta, busqueda, categorias, tipo }) => {
-    const coincideBusqueda = consulta === "" || busqueda.includes(consulta);
-    const coincideCategoria =
-      categoriaActiva === "todos" || categorias.includes(categoriaActiva);
-    const visible = coincideBusqueda && coincideCategoria;
-
+  tarjetasCatalogo.forEach(({ tarjeta, producto, busqueda }) => {
+    const visible = (consulta === "" || busqueda.includes(consulta)) && coincideFiltro(producto) && coincideAccesorio(producto);
     tarjeta.hidden = !visible;
-    if (visible) {
-      visibles += 1;
-      if (tipo === "accesorio") cantidadAccesoriosVisibles += 1;
-    }
+    if (visible) visibles += 1;
   });
-
-  seccionAccesorios.hidden = cantidadAccesoriosVisibles === 0;
-
+  filtrosAccesorios.hidden = filtroActivo !== "accesorios";
   if (visibles === 0) {
-    mostrarEstadoVacio(consulta !== "" || categoriaActiva !== "todos");
+    sinResultados.hidden = false;
+    sinResultadosTitulo.textContent = "No encontramos coincidencias";
+    sinResultadosTexto.textContent = "Prueba con otro codigo, categoria, estado o tipo de accesorio.";
   } else {
     sinResultados.hidden = true;
   }
 }
 
 function crearFiltros() {
-  const categoriasDisponibles = CATEGORIAS.filter((categoria) =>
-    productosVisibles.some((pez) =>
-      categoriasDelProducto(pez).includes(categoria.id),
-    ),
-  );
-  const opciones = [
-    { id: "todos", nombre: "Todos" },
-    ...categoriasDisponibles,
-  ];
-
-  filtrosCatalogo.innerHTML = opciones
-    .map(
-      (opcion) => `
-        <button
-          class="filtro-catalogo ${opcion.id === "todos" ? "activo" : ""}"
-          type="button"
-          data-categoria="${opcion.id}"
-          aria-pressed="${opcion.id === "todos" ? "true" : "false"}"
-        >
-          ${opcion.nombre}
-        </button>
-      `,
-    )
-    .join("");
-
+  filtrosCatalogo.innerHTML = FILTROS_PRINCIPALES.map(([id, nombre]) => `
+    <button class="filtro-catalogo ${id === "todos" ? "activo" : ""}" type="button" data-filtro="${id}" aria-pressed="${id === "todos" ? "true" : "false"}">${nombre}</button>
+  `).join("");
+  const tipos = new Set(productosOrdenados.filter((p) => categoriaProducto(p) === "accesorio").map(tipoAccesorio));
+  filtrosAccesorios.innerHTML = FILTROS_ACCESORIOS
+    .filter(([id, , tipo]) => id === "todos-accesorios" || tipos.has(tipo))
+    .map(([id, nombre]) => `
+      <button class="filtro-catalogo filtro-secundario ${id === "todos-accesorios" ? "activo" : ""}" type="button" data-filtro-accesorio="${id}" aria-pressed="${id === "todos-accesorios" ? "true" : "false"}">${nombre}</button>
+    `).join("");
+  filtrosAccesorios.hidden = true;
   filtrosCatalogo.addEventListener("click", (evento) => {
-    const boton = evento.target.closest("[data-categoria]");
+    const boton = evento.target.closest("[data-filtro]");
     if (!boton) return;
-
-    categoriaActiva = boton.dataset.categoria;
-    filtrosCatalogo.querySelectorAll("[data-categoria]").forEach((filtro) => {
+    filtroActivo = boton.dataset.filtro;
+    if (filtroActivo !== "accesorios") filtroAccesorioActivo = "todos-accesorios";
+    filtrosCatalogo.querySelectorAll("[data-filtro]").forEach((filtro) => {
+      const activo = filtro === boton;
+      filtro.classList.toggle("activo", activo);
+      filtro.setAttribute("aria-pressed", activo ? "true" : "false");
+    });
+    filtrosAccesorios.querySelectorAll("[data-filtro-accesorio]").forEach((filtro) => {
+      const activo = filtro.dataset.filtroAccesorio === filtroAccesorioActivo;
+      filtro.classList.toggle("activo", activo);
+      filtro.setAttribute("aria-pressed", activo ? "true" : "false");
+    });
+    aplicarFiltros();
+  });
+  filtrosAccesorios.addEventListener("click", (evento) => {
+    const boton = evento.target.closest("[data-filtro-accesorio]");
+    if (!boton) return;
+    filtroAccesorioActivo = boton.dataset.filtroAccesorio;
+    filtrosAccesorios.querySelectorAll("[data-filtro-accesorio]").forEach((filtro) => {
       const activo = filtro === boton;
       filtro.classList.toggle("activo", activo);
       filtro.setAttribute("aria-pressed", activo ? "true" : "false");
@@ -562,33 +483,12 @@ function crearFiltros() {
 }
 
 async function cargarCatalogo() {
-  const tarjetasPeces = await Promise.all(pecesDisponibles.map(crearTarjeta));
-  const tarjetasAccesorios = await Promise.all(
-    accesoriosVisibles.map(crearTarjeta),
-  );
-
-  tarjetasPeces.forEach((tarjeta, indice) => {
-    const producto = pecesDisponibles[indice];
-    catalogoRenderizado.push({
-      tarjeta,
-      busqueda: textoBuscable(producto),
-      categorias: categoriasDelProducto(producto),
-      tipo: tipoDelProducto(producto),
-    });
+  const tarjetas = await Promise.all(productosOrdenados.map(crearTarjeta));
+  tarjetas.forEach((tarjeta, indice) => {
+    const producto = productosOrdenados[indice];
+    tarjetasCatalogo.push({ tarjeta, producto, busqueda: textoBuscable(producto) });
     lista.appendChild(tarjeta);
   });
-
-  tarjetasAccesorios.forEach((tarjeta, indice) => {
-    const producto = accesoriosVisibles[indice];
-    catalogoRenderizado.push({
-      tarjeta,
-      busqueda: textoBuscable(producto),
-      categorias: categoriasDelProducto(producto),
-      tipo: tipoDelProducto(producto),
-    });
-    listaAccesorios.appendChild(tarjeta);
-  });
-
   aplicarFiltros();
 }
 
@@ -597,10 +497,8 @@ crearFiltros();
 cargarCatalogo();
 buscador.addEventListener("input", aplicarFiltros);
 
-const mensajeGeneral =
-  "Hola, quiero información sobre los bettas disponibles en Barcelona.";
+const mensajeGeneral = "Hola, quiero informacion sobre los bettas disponibles en Barcelona.";
 const enlaceGeneral = enlaceWhatsApp(mensajeGeneral);
-
 whatsappFlotante.href = enlaceGeneral;
 
 const enlacesRedes = {
@@ -622,4 +520,18 @@ visor.addEventListener("click", (evento) => {
 visor.addEventListener("close", () => {
   document.body.classList.remove("visor-abierto");
   imagenAmpliada.src = "";
+});
+
+cerrarVideo.addEventListener("click", cerrarVideoLocal);
+visorVideo.addEventListener("click", (evento) => {
+  if (evento.target === visorVideo) cerrarVideoLocal();
+});
+visorVideo.addEventListener("close", () => {
+  if (videoAmpliado.src) {
+    videoAmpliado.pause();
+    videoAmpliado.currentTime = 0;
+    videoAmpliado.removeAttribute("src");
+    videoAmpliado.load();
+  }
+  document.body.classList.remove("visor-abierto");
 });

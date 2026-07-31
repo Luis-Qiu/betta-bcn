@@ -171,27 +171,17 @@
           <div
             id="filtros-catalogo"
             class="filtros-catalogo"
-            aria-label="Categorías disponibles"
+            aria-label="Filtros principales del catálogo"
+          ></div>
+          <div
+            id="filtros-accesorios"
+            class="filtros-catalogo filtros-accesorios"
+            aria-label="Filtros de accesorios"
+            hidden
           ></div>
         </div>
 
         <div id="lista-peces" class="rejilla"></div>
-
-        <section
-          id="seccion-accesorios"
-          class="seccion-accesorios"
-          aria-labelledby="titulo-accesorios"
-          hidden
-        >
-          <div class="cabecera-accesorios">
-            <div>
-              <p class="etiqueta">Selección Betta BCN</p>
-              <h3 id="titulo-accesorios">Accesorios recomendados</h3>
-            </div>
-            <p>Productos elegidos para el cuidado de tus bettas.</p>
-          </div>
-          <div id="lista-accesorios" class="rejilla"></div>
-        </section>
 
         <div id="sin-resultados" class="sin-resultados" hidden>
           <h3 id="sin-resultados-titulo">Próximamente habrá nuevos bettas</h3>
@@ -275,6 +265,14 @@
       </button>
       <img id="imagen-ampliada" src="" alt="" />
       <p id="pie-imagen"></p>
+    </dialog>
+
+    <dialog id="visor-video" class="visor visor-video" aria-label="Vídeo del producto">
+      <button id="cerrar-video" class="cerrar-visor" type="button" aria-label="Cerrar vídeo">
+        ×
+      </button>
+      <video id="video-ampliado" controls playsinline preload="metadata"></video>
+      <p id="pie-video"></p>
     </dialog>
 
     <script src="datos.js"></script>

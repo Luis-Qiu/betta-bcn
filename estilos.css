@@ -476,6 +476,15 @@ h2 {
   gap: 9px;
 }
 
+.filtros-accesorios {
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.filtros-accesorios[hidden] {
+  display: none;
+}
+
 .filtro-catalogo {
   min-height: 38px;
   padding: 8px 15px;
@@ -798,6 +807,32 @@ h2 {
   box-shadow: 0 0 8px rgba(255, 79, 79, 0.62);
 }
 
+.estado-vendido {
+  color: #d7dde5;
+  background: rgba(148, 163, 184, 0.14);
+}
+
+.estado-vendido span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #9aa7b7;
+  box-shadow: 0 0 8px rgba(154, 167, 183, 0.4);
+}
+
+.tarjeta-vendida {
+  border-color: rgba(148, 163, 184, 0.16);
+  background: linear-gradient(180deg, #0b1624, #07111c);
+}
+
+.tarjeta-vendida .foto-contenedor img {
+  filter: saturate(0.45) brightness(0.72);
+}
+
+.tarjeta-vendida .tarjeta-cuerpo {
+  opacity: 0.88;
+}
+
 .tarjeta-cabecera {
   display: flex;
   align-items: start;
@@ -928,6 +963,17 @@ h2 {
     linear-gradient(100deg, rgba(37, 244, 238, 0.15), transparent 50%),
     linear-gradient(280deg, rgba(254, 44, 85, 0.13), transparent 50%),
     #17202c;
+}
+
+.boton-secundario {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #dce7f4;
+  background: #152131;
+}
+
+.boton-secundario:hover {
+  background: #1c2b3d;
 }
 
 .sin-resultados {
@@ -1236,11 +1282,17 @@ h2 {
   backdrop-filter: blur(8px);
 }
 
-.visor img {
+.visor img,
+.visor video {
   width: 100%;
   max-height: calc(100dvh - 110px);
   object-fit: contain;
   background: #02060b;
+}
+
+.visor-video video {
+  display: block;
+  aspect-ratio: 16 / 9;
 }
 
 .visor p {
