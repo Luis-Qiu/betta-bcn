@@ -820,15 +820,6 @@ h2 {
   box-shadow: 0 0 8px rgba(154, 167, 183, 0.4);
 }
 
-.tarjeta-vendida {
-  border-color: rgba(148, 163, 184, 0.16);
-  background: linear-gradient(180deg, #0b1624, #07111c);
-}
-
-.tarjeta-vendida .tarjeta-cuerpo {
-  opacity: 0.88;
-}
-
 .tarjeta-cabecera {
   display: flex;
   align-items: start;
