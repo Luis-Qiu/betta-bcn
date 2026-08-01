@@ -15,7 +15,16 @@ const videoAmpliado = document.querySelector("#video-ampliado");
 const pieVideo = document.querySelector("#pie-video");
 const cerrarVideo = document.querySelector("#cerrar-video");
 
-const FORMATOS_IMAGEN = ["jpg", "jpeg", "png", "webp", "JPG", "JPEG", "PNG", "WEBP"];
+const FORMATOS_IMAGEN = [
+  "jpg",
+  "jpeg",
+  "png",
+  "webp",
+  "JPG",
+  "JPEG",
+  "PNG",
+  "WEBP",
+];
 
 const FILTROS_PRINCIPALES = [
   ["todos", "Todos"],
@@ -151,8 +160,23 @@ function htmlPrecio(producto) {
 function comprobarImagen(ruta) {
   return new Promise((resolver) => {
     const imagen = new Image();
-    imagen.onload = () => resolver(ruta);
-    imagen.onerror = () => resolver(null);
+    const terminar = (resultado) => {
+      imagen.onload = null;
+      imagen.onerror = null;
+      resolver(resultado);
+    };
+
+    imagen.onload = () => {
+      if (typeof imagen.decode !== "function") {
+        terminar(ruta);
+        return;
+      }
+
+      imagen.decode()
+        .then(() => terminar(ruta))
+        .catch(() => terminar(null));
+    };
+    imagen.onerror = () => terminar(null);
     imagen.src = ruta;
   });
 }
@@ -167,9 +191,15 @@ async function detectarPrimerFormato(nombreBase) {
 }
 
 async function detectarFotos(codigo) {
-  const posiciones = Array.from({ length: 5 }, (_, indice) => `${String(codigo).trim()}-${indice + 1}`);
-  const resultados = await Promise.all(posiciones.map(detectarPrimerFormato));
-  return resultados.filter(Boolean);
+  const codigoSeguro = String(codigo).trim();
+  const fotos = [];
+
+  for (let numeroFoto = 1; numeroFoto <= 5; numeroFoto += 1) {
+    const encontrada = await detectarPrimerFormato(`${codigoSeguro}-${numeroFoto}`);
+    if (encontrada) fotos.push(encontrada);
+  }
+
+  return fotos;
 }
 
 async function cargarImagenesPrincipales() {
@@ -279,7 +309,7 @@ async function crearTarjeta(producto) {
   articulo.innerHTML = `
     <div class="galeria ${tieneGaleria ? "galeria-multiple" : "galeria-unica"}">
       <button class="foto-contenedor" type="button" aria-label="Ampliar imagen 1 de ${fotos.length} de ${nombre}" title="Ampliar imagen">
-        <img src="${fotos[0]}" alt="${nombre}, foto 1" loading="lazy" draggable="false">
+        <img src="${fotos[0]}" alt="${nombre}, foto 1" loading="lazy" draggable="false" onerror="this.hidden=true">
         <span class="codigo">${producto.codigo}</span>
         <span class="ampliar-icono" aria-hidden="true">＋</span>
         ${tieneGaleria ? `<span class="contador-fotos">1 / ${fotos.length}</span>` : ""}
@@ -290,7 +320,7 @@ async function crearTarjeta(producto) {
         <div class="miniaturas" aria-label="Fotografias de ${nombre}">
           ${fotos.map((foto, indice) => `
             <button class="miniatura ${indice === 0 ? "activa" : ""}" type="button" data-indice="${indice}" aria-label="Mostrar foto ${indice + 1} de ${fotos.length}" aria-current="${indice === 0 ? "true" : "false"}">
-              <img src="${foto}" alt="" loading="lazy">
+              <img src="${foto}" alt="" loading="lazy" onerror="this.hidden=true">
             </button>
           `).join("")}
         </div>
