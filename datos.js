@@ -23,6 +23,12 @@
   Precios:
   - Sin oferta: precioAnterior: null.
   - Con oferta: precioAnterior con el precio antiguo. El descuento se calcula solo.
+
+  Orden:
+  - orden: 1 aparece antes que orden: 2.
+  - Puedes usar 1, 2, 3... o dejar huecos como 10, 20, 30.
+  - Si dos productos tienen el mismo orden, se mantiene el orden escrito aqui.
+  - Si un producto no tiene orden, aparece despues de los productos con orden.
 */
 
 const CONFIGURACION = {
@@ -39,6 +45,7 @@ const CONFIGURACION = {
 const BETTAS = [
   {
     codigo: "KOI001",
+    orden: 1,
     categoria: "betta",
     variedad: "KOI Metalico",
     estado: "disponible",
@@ -51,6 +58,7 @@ const BETTAS = [
   },
   {
     codigo: "KOI002",
+    orden: 2,
     categoria: "betta",
     variedad: "KOI Metalico",
     estado: "disponible",
@@ -63,6 +71,7 @@ const BETTAS = [
   },
   {
     codigo: "HM002",
+    orden: 3,
     categoria: "betta",
     variedad: "Halfmoon",
     estado: "disponible",
@@ -75,6 +84,7 @@ const BETTAS = [
   },
   {
     codigo: "HB001",
+    orden: 4,
     categoria: "betta",
     variedad: "Hell Boy",
     estado: "vendido",
@@ -87,6 +97,7 @@ const BETTAS = [
   },
   {
     codigo: "HB002",
+    orden: 5,
     categoria: "betta",
     variedad: "Hell Boy",
     estado: "vendido",
@@ -99,6 +110,7 @@ const BETTAS = [
   },
   {
     codigo: "CN001",
+    orden: 6,
     categoria: "betta",
     variedad: "Candy Metalico",
     estado: "vendido",
@@ -111,6 +123,7 @@ const BETTAS = [
   },
   {
     codigo: "CT001",
+    orden: 7,
     categoria: "betta",
     variedad: "Crowntail",
     estado: "vendido",
@@ -127,6 +140,7 @@ const PAREJAS = [
   // Ejemplo para copiar cuando tengas una pareja:
   // {
   //   codigo: "PAR001",
+  //   orden: 10,
   //   categoria: "pareja",
   //   variedad: "Pareja Hell Boy",
   //   estado: "disponible",
@@ -142,6 +156,7 @@ const PAREJAS = [
 const ACCESORIOS = [
   {
     codigo: "AV001",
+    orden: 20,
     categoria: "accesorio",
     tipoAccesorio: "betta-stick",
     nombre: "Varita para betta",
@@ -154,6 +169,7 @@ const ACCESORIOS = [
   },
   {
     codigo: "AV002",
+    orden: 21,
     categoria: "accesorio",
     tipoAccesorio: "betta-stick",
     nombre: "Varita para betta roja",
@@ -166,6 +182,7 @@ const ACCESORIOS = [
   },
   {
     codigo: "APack001",
+    orden: 22,
     categoria: "accesorio",
     tipoAccesorio: "acuario",
     nombre: "Acuario 20 x 20 x 25 kit completo",
@@ -178,6 +195,7 @@ const ACCESORIOS = [
   },
   {
     codigo: "A202025F",
+    orden: 23,
     categoria: "accesorio",
     tipoAccesorio: "acuario",
     nombre: "Acuario 20 x 20 x 25 + filtro",
@@ -190,6 +208,7 @@ const ACCESORIOS = [
   },
   {
     codigo: "A202025",
+    orden: 24,
     categoria: "accesorio",
     tipoAccesorio: "acuario",
     nombre: "Acuario 20 x 20 x 25",
@@ -202,6 +221,7 @@ const ACCESORIOS = [
   },
   {
     codigo: "A252530F",
+    orden: 25,
     categoria: "accesorio",
     tipoAccesorio: "acuario",
     nombre: "Acuario 25 x 25 x 30 + filtro",
@@ -214,6 +234,7 @@ const ACCESORIOS = [
   },
   {
     codigo: "A252530",
+    orden: 26,
     categoria: "accesorio",
     tipoAccesorio: "acuario",
     nombre: "Acuario 25 x 25 x 30",
@@ -226,6 +247,7 @@ const ACCESORIOS = [
   },
   {
     codigo: "A303035F",
+    orden: 27,
     categoria: "accesorio",
     tipoAccesorio: "acuario",
     nombre: "Acuario 30 x 30 x 35 + filtro",
@@ -238,6 +260,7 @@ const ACCESORIOS = [
   },
   {
     codigo: "A303035",
+    orden: 28,
     categoria: "accesorio",
     tipoAccesorio: "acuario",
     nombre: "Acuario 30 x 30 x 35",
@@ -250,6 +273,7 @@ const ACCESORIOS = [
   },
   {
     codigo: "A5wF",
+    orden: 29,
     categoria: "accesorio",
     tipoAccesorio: "filtro",
     nombre: "Filtro de 5W",
@@ -262,6 +286,7 @@ const ACCESORIOS = [
   },
   {
     codigo: "A8wF",
+    orden: 30,
     categoria: "accesorio",
     tipoAccesorio: "filtro",
     nombre: "Filtro de 8W",

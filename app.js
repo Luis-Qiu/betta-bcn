@@ -91,14 +91,9 @@ function productoVisible(producto) {
   return estado === "disponible" || estado === "vendido";
 }
 
-function pesoOrden(producto) {
-  const categoria = categoriaProducto(producto);
-  const estado = estadoProducto(producto);
-  if ((categoria === "betta" || categoria === "pareja") && estado === "disponible") return 1;
-  if ((categoria === "betta" || categoria === "pareja") && estado === "vendido") return 2;
-  if (categoria === "accesorio" && estado === "disponible") return 3;
-  if (categoria === "accesorio" && estado === "agotado") return 4;
-  return 9;
+function numeroOrden(producto) {
+  const valor = Number(producto.orden);
+  return Number.isFinite(valor) ? valor : null;
 }
 
 function textoBuscable(producto) {
@@ -433,11 +428,20 @@ async function crearTarjeta(producto) {
   return articulo;
 }
 
-const productosOrdenados = todosLosProductos().filter(productoVisible).sort((a, b) => {
-  const diferencia = pesoOrden(a) - pesoOrden(b);
-  if (diferencia !== 0) return diferencia;
-  return String(a.codigo).localeCompare(String(b.codigo), "es");
-});
+const productosOrdenados = todosLosProductos()
+  .map((producto, indiceOriginal) => ({ producto, indiceOriginal }))
+  .filter(({ producto }) => productoVisible(producto))
+  .sort((a, b) => {
+    const ordenA = numeroOrden(a.producto);
+    const ordenB = numeroOrden(b.producto);
+    const tieneOrdenA = ordenA !== null;
+    const tieneOrdenB = ordenB !== null;
+
+    if (tieneOrdenA && tieneOrdenB && ordenA !== ordenB) return ordenA - ordenB;
+    if (tieneOrdenA !== tieneOrdenB) return tieneOrdenA ? -1 : 1;
+    return a.indiceOriginal - b.indiceOriginal;
+  })
+  .map(({ producto }) => producto);
 
 function coincideFiltro(producto) {
   const categoria = categoriaProducto(producto);
