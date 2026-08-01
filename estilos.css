@@ -825,10 +825,6 @@ h2 {
   background: linear-gradient(180deg, #0b1624, #07111c);
 }
 
-.tarjeta-vendida .foto-contenedor img {
-  filter: saturate(0.45) brightness(0.72);
-}
-
 .tarjeta-vendida .tarjeta-cuerpo {
   opacity: 0.88;
 }
@@ -974,6 +970,19 @@ h2 {
 
 .boton-secundario:hover {
   background: #1c2b3d;
+}
+
+.boton-deshabilitado {
+  width: 100%;
+  color: #9aa7b7;
+  background: #182231;
+  cursor: not-allowed;
+  opacity: 0.78;
+}
+
+.boton-deshabilitado:hover {
+  transform: none;
+  background: #182231;
 }
 
 .sin-resultados {

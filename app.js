@@ -350,7 +350,11 @@ async function crearTarjeta(producto) {
       <div class="acciones-tarjeta">
         ${videoLocal ? `<button class="boton boton-video boton-video-local" type="button">Ver video</button>` : ""}
         ${videoTikTok ? `<a class="boton boton-video" href="${videoTikTok}" target="_blank" rel="noopener noreferrer" aria-label="Ver video en TikTok de ${nombre}">Ver video en TikTok</a>` : ""}
-        <a class="boton ${vendido ? "boton-secundario" : "boton-tarjeta"}" href="${enlaceWhatsApp(mensajeWhatsApp(producto))}" target="_blank" rel="noopener noreferrer">${textoBoton(producto)}</a>
+        ${
+          vendido
+            ? `<button class="boton boton-deshabilitado" type="button" disabled>Vendido</button>`
+            : `<a class="boton boton-tarjeta" href="${enlaceWhatsApp(mensajeWhatsApp(producto))}" target="_blank" rel="noopener noreferrer">${textoBoton(producto)}</a>`
+        }
       </div>
     </div>
   `;
