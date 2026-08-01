@@ -38,18 +38,6 @@ const CONFIGURACION = {
 
 const BETTAS = [
   {
-    codigo: "HM002",
-    categoria: "betta",
-    variedad: "Halfmoon",
-    estado: "disponible",
-    sexo: "Macho",
-    precio: 40,
-    precioAnterior: 45,
-    descripcion: "Coloracion segun fotografias.",
-    videoLocal: "",
-    videoTikTok: "",
-  },
-  {
     codigo: "KOI001",
     categoria: "betta",
     variedad: "KOI Metalico",
@@ -70,6 +58,18 @@ const BETTAS = [
     precio: 38,
     precioAnterior: 42,
     descripcion: "Amarillo",
+    videoLocal: "",
+    videoTikTok: "",
+  },
+  {
+    codigo: "HM002",
+    categoria: "betta",
+    variedad: "Halfmoon",
+    estado: "disponible",
+    sexo: "Macho",
+    precio: 40,
+    precioAnterior: 45,
+    descripcion: "Coloracion segun fotografias.",
     videoLocal: "",
     videoTikTok: "",
   },
