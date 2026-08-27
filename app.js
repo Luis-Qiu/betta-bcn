@@ -12,6 +12,7 @@ const pieImagen = document.querySelector("#pie-imagen");
 const cerrarVisor = document.querySelector("#cerrar-visor");
 const visorAnterior = document.querySelector("#visor-anterior");
 const visorSiguiente = document.querySelector("#visor-siguiente");
+const visorMiniaturas = document.querySelector("#visor-miniaturas");
 const visorVideo = document.querySelector("#visor-video");
 const videoAmpliado = document.querySelector("#video-ampliado");
 const pieVideo = document.querySelector("#pie-video");
@@ -19,6 +20,8 @@ const cerrarVideo = document.querySelector("#cerrar-video");
 const cabecera = document.querySelector(".cabecera");
 const heroVisual = document.querySelector(".hero-visual");
 const heroImagen = document.querySelector(".hero-visual img");
+const experiencia = document.querySelector(".experiencia");
+const experienciaImagen = document.querySelector(".experiencia-marco img");
 
 const FORMATOS_IMAGEN = [
   "jpg",
@@ -58,7 +61,11 @@ const visorEstado = {
   fotos: [],
   indice: 0,
   zoom: 1,
+  offsetX: 0,
+  offsetY: 0,
   inicioX: 0,
+  inicioY: 0,
+  arrastrando: false,
   inicioDistancia: 0,
 };
 
@@ -238,17 +245,27 @@ function actualizarVisor() {
   const total = visorEstado.fotos.length;
   imagenAmpliada.src = foto;
   imagenAmpliada.alt = `${nombre}, ${visorEstado.producto.codigo}, foto ${visorEstado.indice + 1}`;
-  imagenAmpliada.style.transform = `scale(${visorEstado.zoom})`;
+  imagenAmpliada.style.transform = `translate3d(${visorEstado.offsetX}px, ${visorEstado.offsetY}px, 0) scale(${visorEstado.zoom})`;
   pieImagen.textContent = `${visorEstado.producto.codigo} · ${nombre} · ${visorEstado.indice + 1}/${total}`;
   const hayGaleria = total > 1;
   visorAnterior.hidden = !hayGaleria;
   visorSiguiente.hidden = !hayGaleria;
+  visorMiniaturas.hidden = !hayGaleria;
+  visorMiniaturas.innerHTML = hayGaleria
+    ? visorEstado.fotos.map((miniatura, indice) => `
+        <button class="visor-miniatura ${indice === visorEstado.indice ? "activa" : ""}" type="button" data-visor-indice="${indice}" aria-label="Ver foto ${indice + 1} de ${total}" aria-current="${indice === visorEstado.indice ? "true" : "false"}">
+          <img src="${miniatura}" alt="" loading="lazy" onerror="this.hidden=true">
+        </button>
+      `).join("")
+    : "";
 }
 
 function moverVisor(direccion) {
   if (visorEstado.fotos.length <= 1) return;
   visorEstado.indice = (visorEstado.indice + direccion + visorEstado.fotos.length) % visorEstado.fotos.length;
   visorEstado.zoom = 1;
+  visorEstado.offsetX = 0;
+  visorEstado.offsetY = 0;
   actualizarVisor();
 }
 
@@ -257,6 +274,8 @@ function abrirVisor(producto, fotos, indice = 0) {
   visorEstado.fotos = fotos;
   visorEstado.indice = indice;
   visorEstado.zoom = 1;
+  visorEstado.offsetX = 0;
+  visorEstado.offsetY = 0;
   actualizarVisor();
   visor.showModal();
   document.body.classList.add("visor-abierto");
@@ -271,6 +290,8 @@ function cerrarImagen() {
   visorEstado.fotos = [];
   visorEstado.indice = 0;
   visorEstado.zoom = 1;
+  visorEstado.offsetX = 0;
+  visorEstado.offsetY = 0;
 }
 
 function abrirVideo(producto, ruta) {
@@ -573,15 +594,36 @@ function iniciarScrollSuave() {
 }
 
 function iniciarHeaderDinamico() {
+  let rafPendiente = false;
   const actualizarHeader = () => {
+    rafPendiente = false;
     cabecera.classList.toggle("cabecera-scroll", window.scrollY > 24);
-    if (!heroImagen || reduceMotion) return;
+    if (reduceMotion) return;
     const avance = Math.min(window.scrollY / 620, 1);
-    heroImagen.style.setProperty("--scroll-y", `${avance * 18}px`);
-    heroImagen.style.setProperty("--scroll-scale", String(1 + avance * 0.025));
+    document.documentElement.style.setProperty("--hero-scroll", avance.toFixed(3));
+
+    if (heroImagen) {
+      heroImagen.style.setProperty("--scroll-y", `${avance * 42}px`);
+      heroImagen.style.setProperty("--scroll-scale", String(1 + avance * 0.055));
+    }
+
+    if (experiencia && experienciaImagen) {
+      const caja = experiencia.getBoundingClientRect();
+      const rango = Math.max(experiencia.offsetHeight - window.innerHeight, 1);
+      const progreso = Math.min(Math.max((window.innerHeight - caja.top) / rango, 0), 1);
+      experienciaImagen.style.setProperty("--cinema-scale", String(0.72 + progreso * 0.46));
+      experienciaImagen.style.setProperty("--cinema-y", `${(1 - progreso) * 34}px`);
+      experiencia.style.setProperty("--cinema-progress", progreso.toFixed(3));
+    }
+  };
+  const solicitarActualizacion = () => {
+    if (rafPendiente) return;
+    rafPendiente = true;
+    requestAnimationFrame(actualizarHeader);
   };
   actualizarHeader();
-  window.addEventListener("scroll", actualizarHeader, { passive: true });
+  window.addEventListener("scroll", solicitarActualizacion, { passive: true });
+  window.addEventListener("resize", solicitarActualizacion, { passive: true });
 }
 
 function iniciarHeroPremium() {
@@ -601,6 +643,7 @@ function iniciarHeroPremium() {
 
 function iniciarScrollReveal() {
   const elementos = document.querySelectorAll(`
+    .experiencia-texto,
     .contacto-intro,
     .red-social,
     .confianza-cabecera,
@@ -673,6 +716,15 @@ document.querySelector("#anio").textContent = new Date().getFullYear();
 cerrarVisor.addEventListener("click", cerrarImagen);
 visorAnterior.addEventListener("click", () => moverVisor(-1));
 visorSiguiente.addEventListener("click", () => moverVisor(1));
+visorMiniaturas.addEventListener("click", (evento) => {
+  const boton = evento.target.closest("[data-visor-indice]");
+  if (!boton) return;
+  visorEstado.indice = Number(boton.dataset.visorIndice);
+  visorEstado.zoom = 1;
+  visorEstado.offsetX = 0;
+  visorEstado.offsetY = 0;
+  actualizarVisor();
+});
 visor.addEventListener("click", (evento) => {
   if (evento.target === visor) cerrarImagen();
 });
@@ -681,13 +733,35 @@ visor.addEventListener("wheel", (evento) => {
   evento.preventDefault();
   const cambio = evento.deltaY < 0 ? 0.12 : -0.12;
   visorEstado.zoom = Math.min(Math.max(visorEstado.zoom + cambio, 1), 2.4);
-  imagenAmpliada.style.transform = `scale(${visorEstado.zoom})`;
+  if (visorEstado.zoom === 1) {
+    visorEstado.offsetX = 0;
+    visorEstado.offsetY = 0;
+  }
+  actualizarVisor();
 }, { passive: false });
 visor.addEventListener("pointerdown", (evento) => {
   visorEstado.inicioX = evento.clientX;
+  visorEstado.inicioY = evento.clientY;
+  visorEstado.arrastrando = visorEstado.zoom > 1;
+  if (visorEstado.arrastrando && visor.setPointerCapture) visor.setPointerCapture(evento.pointerId);
+});
+visor.addEventListener("pointermove", (evento) => {
+  if (!visorEstado.arrastrando) return;
+  const deltaX = evento.clientX - visorEstado.inicioX;
+  const deltaY = evento.clientY - visorEstado.inicioY;
+  visorEstado.inicioX = evento.clientX;
+  visorEstado.inicioY = evento.clientY;
+  visorEstado.offsetX += deltaX;
+  visorEstado.offsetY += deltaY;
+  actualizarVisor();
 });
 visor.addEventListener("pointerup", (evento) => {
   const distancia = evento.clientX - visorEstado.inicioX;
+  if (visor.hasPointerCapture?.(evento.pointerId)) visor.releasePointerCapture(evento.pointerId);
+  if (visorEstado.arrastrando) {
+    visorEstado.arrastrando = false;
+    return;
+  }
   if (Math.abs(distancia) >= 55) moverVisor(distancia < 0 ? 1 : -1);
 });
 visor.addEventListener("touchstart", (evento) => {
@@ -702,7 +776,7 @@ visor.addEventListener("touchmove", (evento) => {
   const distancia = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
   const escala = distancia / visorEstado.inicioDistancia;
   visorEstado.zoom = Math.min(Math.max(escala, 1), 2.4);
-  imagenAmpliada.style.transform = `scale(${visorEstado.zoom})`;
+  actualizarVisor();
 }, { passive: true });
 visor.addEventListener("close", () => {
   document.body.classList.remove("visor-abierto");

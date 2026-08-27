@@ -30,42 +30,80 @@
         <a class="boton boton-pequeno" href="#catalogo">Ver catálogo</a>
       </nav>
 
-      <section class="hero contenedor" id="inicio">
-        <div class="hero-texto">
-          <p class="etiqueta">Selección · Calidad · Confianza</p>
-          <h1>Betta <span>BCN</span></h1>
-          <p class="subtitulo">
-            Bettas seleccionados e importados de Tailandia 🇹🇭
-          </p>
-          <p class="ubicacion-marca">📍 Barcelona</p>
-          <p class="promesa-marca">
-            Cada betta es único, y merece un hogar a su altura.
-          </p>
-          <p class="introduccion manifiesto-marca">
-            No vendemos cualquier betta. Seleccionamos ejemplares que nosotros
-            mismos estaríamos orgullosos de mantener.
-          </p>
-          <div class="hero-acciones">
-            <a class="boton" href="#catalogo">Explorar bettas</a>
-            <a class="boton boton-secundario boton-hero-whatsapp" data-red="whatsapp" href="#" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-          </div>
+      <section class="hero" id="inicio">
+        <div class="hero-fondo" aria-hidden="true">
+          <span class="hero-luz hero-luz-1"></span>
+          <span class="hero-luz hero-luz-2"></span>
+          <span class="hero-linea hero-linea-1"></span>
+          <span class="hero-linea hero-linea-2"></span>
         </div>
 
-        <div class="hero-visual" aria-hidden="true">
-          <div class="burbuja burbuja-1"></div>
-          <div class="burbuja burbuja-2"></div>
-          <img
-            src="imagenes/betta-destacado.svg"
-            data-imagen-automatica="portada"
-            alt=""
-            fetchpriority="high"
-            decoding="async"
-          />
+        <div class="hero-contenido contenedor">
+          <div class="hero-editorial">
+            <p class="etiqueta hero-etiqueta">Bettas seleccionados · Tailandia</p>
+            <h1><span>Betta</span> <span>BCN</span></h1>
+            <p class="subtitulo">
+              Bettas seleccionados e importados de Tailandia 🇹🇭
+            </p>
+            <div class="hero-datos">
+              <span>📍 Barcelona</span>
+              <span>Stock real</span>
+              <span>Fotos del ejemplar</span>
+            </div>
+          </div>
+
+          <div class="hero-visual" aria-hidden="true">
+            <div class="hero-orbita hero-orbita-1"></div>
+            <div class="hero-orbita hero-orbita-2"></div>
+            <img
+              src="imagenes/betta-destacado.svg"
+              data-imagen-automatica="portada"
+              alt=""
+              fetchpriority="high"
+              decoding="async"
+            />
+          </div>
+
+          <div class="hero-manifiesto">
+            <p class="promesa-marca">
+              Cada betta es único, y merece un hogar a su altura.
+            </p>
+            <p class="introduccion manifiesto-marca">
+              No vendemos cualquier betta. Seleccionamos ejemplares que nosotros
+              mismos estaríamos orgullosos de mantener.
+            </p>
+            <div class="hero-acciones">
+              <a class="boton" href="#catalogo">Explorar bettas</a>
+              <a class="boton boton-secundario boton-hero-whatsapp" data-red="whatsapp" href="#" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+            </div>
+          </div>
         </div>
       </section>
     </header>
 
     <main>
+      <section class="experiencia" aria-label="Selección premium Betta BCN">
+        <div class="experiencia-sticky">
+          <div class="experiencia-marco">
+            <img
+              src="imagenes/betta-destacado.svg"
+              data-imagen-automatica="portada"
+              alt=""
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+          <div class="contenedor experiencia-texto">
+            <p class="etiqueta">Selección viva</p>
+            <h2>Ejemplares únicos, vistos como piezas principales.</h2>
+            <p>
+              Un catálogo pensado para mirar cada betta con calma: fotografía,
+              estado real y contacto directo, sin carrito ni distracciones.
+            </p>
+          </div>
+        </div>
+      </section>
+
       <section class="contacto" id="contacto">
         <div class="contenedor contacto-contenido">
           <div class="contacto-intro">
@@ -272,6 +310,7 @@
       </div>
       <button id="visor-siguiente" class="visor-flecha visor-siguiente" type="button" aria-label="Imagen siguiente"></button>
       <p id="pie-imagen"></p>
+      <div id="visor-miniaturas" class="visor-miniaturas" aria-label="Miniaturas del visor"></div>
     </dialog>
 
     <dialog id="visor-video" class="visor visor-video" aria-label="Vídeo del producto">
