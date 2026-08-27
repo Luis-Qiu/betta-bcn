@@ -1732,6 +1732,10 @@ h2 {
 }
 
 .hero-visual {
+  --parallax-x: 0px;
+  --parallax-y: 0px;
+  --scroll-y: 0px;
+  --scroll-scale: 1;
   position: absolute;
   inset: 0;
   z-index: 2;
@@ -1861,6 +1865,8 @@ h2 {
 }
 
 .experiencia-marco {
+  --cinema-scale: 0.72;
+  --cinema-y: 34px;
   position: absolute;
   inset: 8vh 5vw;
   display: grid;
@@ -1882,8 +1888,6 @@ h2 {
 }
 
 .experiencia-marco img {
-  --cinema-scale: 0.72;
-  --cinema-y: 34px;
   width: min(78vw, 980px);
   max-height: 76svh;
   object-fit: contain;
@@ -2055,6 +2059,88 @@ main {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.video-portada,
+.imagen-portada-fallback {
+  object-fit: cover;
+  object-position: center;
+}
+
+.imagen-portada-fallback {
+  display: none;
+}
+
+.hero-visual .video-portada,
+.hero-visual .imagen-portada-fallback {
+  position: absolute;
+  right: clamp(-120px, -4vw, -20px);
+  top: 50%;
+  width: min(75vw, 980px);
+  height: min(88svh, 760px);
+  max-height: min(88svh, 760px);
+  border-radius: 34px;
+  transform:
+    translate3d(
+      calc(var(--parallax-x) + (var(--hero-scroll, 0) * 34px)),
+      calc(-50% + var(--parallax-y) + var(--scroll-y)),
+      0
+    )
+    scale(var(--scroll-scale));
+  filter:
+    drop-shadow(0 34px 60px rgba(0, 0, 0, 0.66))
+    drop-shadow(0 0 50px rgba(22, 119, 255, 0.26));
+  animation: flotar 7.5s ease-in-out infinite, zoomHero 20s ease-in-out infinite;
+}
+
+.hero-visual::after,
+.experiencia-marco::after {
+  position: absolute;
+  z-index: 2;
+  content: "";
+  pointer-events: none;
+}
+
+.hero-visual::after {
+  right: clamp(-120px, -4vw, -20px);
+  top: 50%;
+  width: min(75vw, 980px);
+  height: min(88svh, 760px);
+  border-radius: 34px;
+  background:
+    linear-gradient(90deg, rgba(2, 6, 13, 0.44), rgba(2, 6, 13, 0.08) 48%, rgba(2, 6, 13, 0.36)),
+    radial-gradient(circle at 58% 44%, transparent 0 42%, rgba(2, 6, 13, 0.34) 100%),
+    linear-gradient(180deg, rgba(2, 6, 13, 0.12), rgba(2, 6, 13, 0.44));
+  transform:
+    translate3d(
+      calc(var(--parallax-x) + (var(--hero-scroll, 0) * 34px)),
+      calc(-50% + var(--parallax-y) + var(--scroll-y)),
+      0
+    )
+    scale(var(--scroll-scale));
+}
+
+.experiencia-marco .video-portada,
+.experiencia-marco .imagen-portada-fallback {
+  width: min(78vw, 980px);
+  height: min(76svh, 720px);
+  max-height: 76svh;
+  border-radius: 34px;
+  transform: translate3d(0, var(--cinema-y), 0) scale(var(--cinema-scale));
+  filter:
+    drop-shadow(0 34px 64px rgba(0, 0, 0, 0.72))
+    drop-shadow(0 0 42px rgba(22, 119, 255, 0.2));
+}
+
+.experiencia-marco::after {
+  width: min(78vw, 980px);
+  height: min(76svh, 720px);
+  max-height: 76svh;
+  border-radius: 34px;
+  background:
+    linear-gradient(180deg, rgba(2, 6, 13, 0.2), rgba(2, 6, 13, 0.5)),
+    radial-gradient(circle at 50% 40%, transparent 0 46%, rgba(2, 6, 13, 0.38) 100%);
+  transform: translate3d(0, var(--cinema-y), 0) scale(var(--cinema-scale));
 }
 
 @media (max-width: 900px) {
@@ -2450,6 +2536,14 @@ main {
     opacity: 1;
     transform: none;
   }
+
+  .video-portada {
+    display: none;
+  }
+
+  .imagen-portada-fallback {
+    display: block;
+  }
 }
 
 @media (max-width: 900px) {
@@ -2636,5 +2730,61 @@ main {
     width: 52px;
     height: 52px;
     flex: 0 0 auto;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-visual .video-portada,
+  .hero-visual .imagen-portada-fallback {
+    right: 50%;
+    top: 54%;
+    width: min(110vw, 760px);
+    height: min(72svh, 560px);
+    opacity: 0.56;
+    transform:
+      translate3d(
+        calc(50% + var(--parallax-x)),
+        calc(-50% + var(--parallax-y) + var(--scroll-y)),
+        0
+      )
+      scale(var(--scroll-scale));
+  }
+
+  .hero-visual::after {
+    right: 50%;
+    top: 54%;
+    width: min(110vw, 760px);
+    height: min(72svh, 560px);
+    transform:
+      translate3d(
+        calc(50% + var(--parallax-x)),
+        calc(-50% + var(--parallax-y) + var(--scroll-y)),
+        0
+      )
+      scale(var(--scroll-scale));
+  }
+}
+
+@media (max-width: 620px) {
+  .hero-visual .video-portada,
+  .hero-visual .imagen-portada-fallback {
+    top: 43%;
+    width: 132vw;
+    height: 58svh;
+    opacity: 0.42;
+  }
+
+  .hero-visual::after {
+    top: 43%;
+    width: 132vw;
+    height: 58svh;
+  }
+
+  .experiencia-marco .video-portada,
+  .experiencia-marco .imagen-portada-fallback,
+  .experiencia-marco::after {
+    width: 118vw;
+    height: 58svh;
+    max-height: 58svh;
   }
 }

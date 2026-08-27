@@ -19,9 +19,10 @@ const pieVideo = document.querySelector("#pie-video");
 const cerrarVideo = document.querySelector("#cerrar-video");
 const cabecera = document.querySelector(".cabecera");
 const heroVisual = document.querySelector(".hero-visual");
-const heroImagen = document.querySelector(".hero-visual img");
+const heroImagen = document.querySelector(".hero-visual .video-portada") || document.querySelector(".hero-visual img");
 const experiencia = document.querySelector(".experiencia");
-const experienciaImagen = document.querySelector(".experiencia-marco img");
+const experienciaMarco = document.querySelector(".experiencia-marco");
+const experienciaImagen = document.querySelector(".experiencia-marco .video-portada") || document.querySelector(".experiencia-marco img");
 
 const FORMATOS_IMAGEN = [
   "jpg",
@@ -235,7 +236,23 @@ async function cargarImagenesPrincipales() {
     document.querySelectorAll('[data-imagen-automatica="portada"]').forEach((imagen) => {
       imagen.src = portada;
     });
+    document.querySelectorAll('[data-poster-automatico="portada"]').forEach((video) => {
+      video.poster = portada;
+    });
   }
+}
+
+function prepararVideosPortada() {
+  const videos = document.querySelectorAll(".video-portada");
+  videos.forEach((video) => {
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    if (reduceMotion) {
+      video.pause();
+      video.removeAttribute("autoplay");
+    }
+  });
 }
 
 function actualizarVisor() {
@@ -603,16 +620,24 @@ function iniciarHeaderDinamico() {
     document.documentElement.style.setProperty("--hero-scroll", avance.toFixed(3));
 
     if (heroImagen) {
-      heroImagen.style.setProperty("--scroll-y", `${avance * 42}px`);
-      heroImagen.style.setProperty("--scroll-scale", String(1 + avance * 0.055));
+      const scrollY = `${avance * 42}px`;
+      const scrollScale = String(1 + avance * 0.055);
+      heroImagen.style.setProperty("--scroll-y", scrollY);
+      heroImagen.style.setProperty("--scroll-scale", scrollScale);
+      heroVisual.style.setProperty("--scroll-y", scrollY);
+      heroVisual.style.setProperty("--scroll-scale", scrollScale);
     }
 
     if (experiencia && experienciaImagen) {
       const caja = experiencia.getBoundingClientRect();
       const rango = Math.max(experiencia.offsetHeight - window.innerHeight, 1);
       const progreso = Math.min(Math.max((window.innerHeight - caja.top) / rango, 0), 1);
-      experienciaImagen.style.setProperty("--cinema-scale", String(0.72 + progreso * 0.46));
-      experienciaImagen.style.setProperty("--cinema-y", `${(1 - progreso) * 34}px`);
+      const cinemaScale = String(0.72 + progreso * 0.46);
+      const cinemaY = `${(1 - progreso) * 34}px`;
+      experienciaImagen.style.setProperty("--cinema-scale", cinemaScale);
+      experienciaImagen.style.setProperty("--cinema-y", cinemaY);
+      experienciaMarco?.style.setProperty("--cinema-scale", cinemaScale);
+      experienciaMarco?.style.setProperty("--cinema-y", cinemaY);
       experiencia.style.setProperty("--cinema-progress", progreso.toFixed(3));
     }
   };
@@ -634,10 +659,14 @@ function iniciarHeroPremium() {
     const y = ((evento.clientY - caja.top) / caja.height - 0.5) * 14;
     heroImagen.style.setProperty("--parallax-x", `${x}px`);
     heroImagen.style.setProperty("--parallax-y", `${y}px`);
+    heroVisual.style.setProperty("--parallax-x", `${x}px`);
+    heroVisual.style.setProperty("--parallax-y", `${y}px`);
   });
   heroVisual.addEventListener("pointerleave", () => {
     heroImagen.style.setProperty("--parallax-x", "0px");
     heroImagen.style.setProperty("--parallax-y", "0px");
+    heroVisual.style.setProperty("--parallax-x", "0px");
+    heroVisual.style.setProperty("--parallax-y", "0px");
   });
 }
 
@@ -692,6 +721,7 @@ async function cargarCatalogo() {
 iniciarScrollSuave();
 iniciarHeaderDinamico();
 iniciarHeroPremium();
+prepararVideosPortada();
 cargarImagenesPrincipales();
 crearFiltros();
 cargarCatalogo();
