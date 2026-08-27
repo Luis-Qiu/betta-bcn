@@ -45,7 +45,10 @@
             No vendemos cualquier betta. Seleccionamos ejemplares que nosotros
             mismos estaríamos orgullosos de mantener.
           </p>
-          <a class="boton" href="#catalogo">Explorar bettas</a>
+          <div class="hero-acciones">
+            <a class="boton" href="#catalogo">Explorar bettas</a>
+            <a class="boton boton-secundario boton-hero-whatsapp" data-red="whatsapp" href="#" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+          </div>
         </div>
 
         <div class="hero-visual" aria-hidden="true">
@@ -263,7 +266,11 @@
       <button id="cerrar-visor" class="cerrar-visor" type="button" aria-label="Cerrar imagen">
         ×
       </button>
-      <img id="imagen-ampliada" src="" alt="" />
+      <button id="visor-anterior" class="visor-flecha visor-anterior" type="button" aria-label="Imagen anterior"></button>
+      <div class="visor-marco">
+        <img id="imagen-ampliada" src="" alt="" />
+      </div>
+      <button id="visor-siguiente" class="visor-flecha visor-siguiente" type="button" aria-label="Imagen siguiente"></button>
       <p id="pie-imagen"></p>
     </dialog>
 

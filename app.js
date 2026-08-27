@@ -10,10 +10,15 @@ const visor = document.querySelector("#visor");
 const imagenAmpliada = document.querySelector("#imagen-ampliada");
 const pieImagen = document.querySelector("#pie-imagen");
 const cerrarVisor = document.querySelector("#cerrar-visor");
+const visorAnterior = document.querySelector("#visor-anterior");
+const visorSiguiente = document.querySelector("#visor-siguiente");
 const visorVideo = document.querySelector("#visor-video");
 const videoAmpliado = document.querySelector("#video-ampliado");
 const pieVideo = document.querySelector("#pie-video");
 const cerrarVideo = document.querySelector("#cerrar-video");
+const cabecera = document.querySelector(".cabecera");
+const heroVisual = document.querySelector(".hero-visual");
+const heroImagen = document.querySelector(".hero-visual img");
 
 const FORMATOS_IMAGEN = [
   "jpg",
@@ -47,6 +52,15 @@ const FILTROS_ACCESORIOS = [
 let filtroActivo = "todos";
 let filtroAccesorioActivo = "todos-accesorios";
 const tarjetasCatalogo = [];
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const visorEstado = {
+  producto: null,
+  fotos: [],
+  indice: 0,
+  zoom: 1,
+  inicioX: 0,
+  inicioDistancia: 0,
+};
 
 function normalizarTexto(valor) {
   return String(valor || "")
@@ -217,11 +231,33 @@ async function cargarImagenesPrincipales() {
   }
 }
 
-function abrirVisor(producto, foto) {
-  const nombre = nombreProducto(producto);
+function actualizarVisor() {
+  if (!visorEstado.producto || visorEstado.fotos.length === 0) return;
+  const nombre = nombreProducto(visorEstado.producto);
+  const foto = visorEstado.fotos[visorEstado.indice];
+  const total = visorEstado.fotos.length;
   imagenAmpliada.src = foto;
-  imagenAmpliada.alt = `${nombre}, ${producto.codigo}`;
-  pieImagen.textContent = `${producto.codigo} · ${nombre}`;
+  imagenAmpliada.alt = `${nombre}, ${visorEstado.producto.codigo}, foto ${visorEstado.indice + 1}`;
+  imagenAmpliada.style.transform = `scale(${visorEstado.zoom})`;
+  pieImagen.textContent = `${visorEstado.producto.codigo} · ${nombre} · ${visorEstado.indice + 1}/${total}`;
+  const hayGaleria = total > 1;
+  visorAnterior.hidden = !hayGaleria;
+  visorSiguiente.hidden = !hayGaleria;
+}
+
+function moverVisor(direccion) {
+  if (visorEstado.fotos.length <= 1) return;
+  visorEstado.indice = (visorEstado.indice + direccion + visorEstado.fotos.length) % visorEstado.fotos.length;
+  visorEstado.zoom = 1;
+  actualizarVisor();
+}
+
+function abrirVisor(producto, fotos, indice = 0) {
+  visorEstado.producto = producto;
+  visorEstado.fotos = fotos;
+  visorEstado.indice = indice;
+  visorEstado.zoom = 1;
+  actualizarVisor();
   visor.showModal();
   document.body.classList.add("visor-abierto");
 }
@@ -230,6 +266,11 @@ function cerrarImagen() {
   visor.close();
   document.body.classList.remove("visor-abierto");
   imagenAmpliada.src = "";
+  imagenAmpliada.style.transform = "";
+  visorEstado.producto = null;
+  visorEstado.fotos = [];
+  visorEstado.indice = 0;
+  visorEstado.zoom = 1;
 }
 
 function abrirVideo(producto, ruta) {
@@ -376,7 +417,7 @@ async function crearTarjeta(producto) {
       fueDeslizamiento = false;
       return;
     }
-    abrirVisor(producto, fotos[fotoActual]);
+    abrirVisor(producto, fotos, fotoActual);
   });
 
   articulo.querySelector(".boton-video-local")?.addEventListener("click", () => abrirVideo(producto, videoLocal));
@@ -520,6 +561,80 @@ function crearFiltros() {
   });
 }
 
+function iniciarScrollSuave() {
+  document.querySelectorAll('a[href^="#"]').forEach((enlace) => {
+    enlace.addEventListener("click", (evento) => {
+      const destino = document.querySelector(enlace.getAttribute("href"));
+      if (!destino) return;
+      evento.preventDefault();
+      destino.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+    });
+  });
+}
+
+function iniciarHeaderDinamico() {
+  const actualizarHeader = () => {
+    cabecera.classList.toggle("cabecera-scroll", window.scrollY > 24);
+    if (!heroImagen || reduceMotion) return;
+    const avance = Math.min(window.scrollY / 620, 1);
+    heroImagen.style.setProperty("--scroll-y", `${avance * 18}px`);
+    heroImagen.style.setProperty("--scroll-scale", String(1 + avance * 0.025));
+  };
+  actualizarHeader();
+  window.addEventListener("scroll", actualizarHeader, { passive: true });
+}
+
+function iniciarHeroPremium() {
+  if (!heroVisual || !heroImagen || reduceMotion || !window.matchMedia("(hover: hover)").matches) return;
+  heroVisual.addEventListener("pointermove", (evento) => {
+    const caja = heroVisual.getBoundingClientRect();
+    const x = ((evento.clientX - caja.left) / caja.width - 0.5) * 16;
+    const y = ((evento.clientY - caja.top) / caja.height - 0.5) * 14;
+    heroImagen.style.setProperty("--parallax-x", `${x}px`);
+    heroImagen.style.setProperty("--parallax-y", `${y}px`);
+  });
+  heroVisual.addEventListener("pointerleave", () => {
+    heroImagen.style.setProperty("--parallax-x", "0px");
+    heroImagen.style.setProperty("--parallax-y", "0px");
+  });
+}
+
+function iniciarScrollReveal() {
+  const elementos = document.querySelectorAll(`
+    .contacto-intro,
+    .red-social,
+    .confianza-cabecera,
+    .confianza-lista li,
+    .aviso-envio,
+    .titulo-seccion,
+    .controles-catalogo,
+    .tarjeta,
+    .sin-resultados,
+    .footer-marca,
+    .footer-redes
+  `);
+
+  elementos.forEach((elemento, indice) => {
+    elemento.classList.add("scroll-reveal");
+    elemento.style.setProperty("--reveal-delay", `${Math.min(indice % 8, 5) * 55}ms`);
+  });
+
+  if (reduceMotion || !("IntersectionObserver" in window)) {
+    elementos.forEach((elemento) => elemento.classList.add("visible"));
+    return;
+  }
+
+  const observador = new IntersectionObserver((entradas) => {
+    entradas.forEach((entrada) => {
+      if (!entrada.isIntersecting) return;
+      entrada.target.classList.add("visible");
+      observador.unobserve(entrada.target);
+    });
+  }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+
+  elementos.forEach((elemento) => observador.observe(elemento));
+}
+
 async function cargarCatalogo() {
   const tarjetas = await Promise.all(productosOrdenados.map(crearTarjeta));
   tarjetas.forEach((tarjeta, indice) => {
@@ -527,9 +642,13 @@ async function cargarCatalogo() {
     tarjetasCatalogo.push({ tarjeta, producto, busqueda: textoBuscable(producto) });
     lista.appendChild(tarjeta);
   });
+  iniciarScrollReveal();
   aplicarFiltros();
 }
 
+iniciarScrollSuave();
+iniciarHeaderDinamico();
+iniciarHeroPremium();
 cargarImagenesPrincipales();
 crearFiltros();
 cargarCatalogo();
@@ -552,12 +671,54 @@ document.querySelectorAll("[data-red]").forEach((enlace) => {
 document.querySelector("#anio").textContent = new Date().getFullYear();
 
 cerrarVisor.addEventListener("click", cerrarImagen);
+visorAnterior.addEventListener("click", () => moverVisor(-1));
+visorSiguiente.addEventListener("click", () => moverVisor(1));
 visor.addEventListener("click", (evento) => {
   if (evento.target === visor) cerrarImagen();
 });
+visor.addEventListener("wheel", (evento) => {
+  if (!visor.open) return;
+  evento.preventDefault();
+  const cambio = evento.deltaY < 0 ? 0.12 : -0.12;
+  visorEstado.zoom = Math.min(Math.max(visorEstado.zoom + cambio, 1), 2.4);
+  imagenAmpliada.style.transform = `scale(${visorEstado.zoom})`;
+}, { passive: false });
+visor.addEventListener("pointerdown", (evento) => {
+  visorEstado.inicioX = evento.clientX;
+});
+visor.addEventListener("pointerup", (evento) => {
+  const distancia = evento.clientX - visorEstado.inicioX;
+  if (Math.abs(distancia) >= 55) moverVisor(distancia < 0 ? 1 : -1);
+});
+visor.addEventListener("touchstart", (evento) => {
+  if (evento.touches.length === 2) {
+    const [a, b] = evento.touches;
+    visorEstado.inicioDistancia = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+  }
+}, { passive: true });
+visor.addEventListener("touchmove", (evento) => {
+  if (evento.touches.length !== 2 || visorEstado.inicioDistancia === 0) return;
+  const [a, b] = evento.touches;
+  const distancia = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+  const escala = distancia / visorEstado.inicioDistancia;
+  visorEstado.zoom = Math.min(Math.max(escala, 1), 2.4);
+  imagenAmpliada.style.transform = `scale(${visorEstado.zoom})`;
+}, { passive: true });
 visor.addEventListener("close", () => {
   document.body.classList.remove("visor-abierto");
   imagenAmpliada.src = "";
+  imagenAmpliada.style.transform = "";
+  visorEstado.producto = null;
+  visorEstado.fotos = [];
+  visorEstado.indice = 0;
+  visorEstado.zoom = 1;
+});
+
+document.addEventListener("keydown", (evento) => {
+  if (!visor.open) return;
+  if (evento.key === "Escape") cerrarImagen();
+  if (evento.key === "ArrowLeft") moverVisor(-1);
+  if (evento.key === "ArrowRight") moverVisor(1);
 });
 
 cerrarVideo.addEventListener("click", cerrarVideoLocal);
