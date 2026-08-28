@@ -244,14 +244,74 @@ async function cargarImagenesPrincipales() {
 
 function prepararVideosPortada() {
   const videos = document.querySelectorAll(".video-portada");
+  const videosVisibles = new Set();
+
+  const intentarReproducir = (video) => {
+    if (document.hidden) return;
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.setAttribute("muted", "");
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "");
+    video.setAttribute("autoplay", "");
+    video.play().catch(() => {});
+  };
+
+  const estaVideoEnViewport = (video) => {
+    const caja = video.getBoundingClientRect();
+    return caja.bottom > window.innerHeight * 0.15 && caja.top < window.innerHeight * 0.85;
+  };
+
+  const actualizarVideosVisibles = () => {
+    videos.forEach((video) => {
+      if (estaVideoEnViewport(video)) {
+        videosVisibles.add(video);
+        intentarReproducir(video);
+      } else {
+        videosVisibles.delete(video);
+        video.pause();
+      }
+    });
+  };
+
   videos.forEach((video) => {
     video.muted = true;
     video.defaultMuted = true;
     video.playsInline = true;
-    if (reduceMotion) {
-      video.pause();
-      video.removeAttribute("autoplay");
+    video.setAttribute("muted", "");
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "");
+    video.setAttribute("autoplay", "");
+    intentarReproducir(video);
+  });
+
+  if (!("IntersectionObserver" in window)) return;
+
+  const observadorVideos = new IntersectionObserver((entradas) => {
+    entradas.forEach((entrada) => {
+      const video = entrada.target;
+      if (entrada.isIntersecting) {
+        videosVisibles.add(video);
+        intentarReproducir(video);
+      } else {
+        videosVisibles.delete(video);
+        video.pause();
+      }
+    });
+  }, { threshold: 0.18 });
+
+  videos.forEach((video) => observadorVideos.observe(video));
+  window.addEventListener("scroll", actualizarVideosVisibles, { passive: true });
+  window.addEventListener("resize", actualizarVideosVisibles, { passive: true });
+  actualizarVideosVisibles();
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      videos.forEach((video) => video.pause());
+      return;
     }
+    actualizarVideosVisibles();
   });
 }
 
@@ -672,7 +732,6 @@ function iniciarHeroPremium() {
 
 function iniciarScrollReveal() {
   const elementos = document.querySelectorAll(`
-    .experiencia-texto,
     .contacto-intro,
     .red-social,
     .confianza-cabecera,

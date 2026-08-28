@@ -44,8 +44,60 @@ const CONFIGURACION = {
 
 const BETTAS = [
   {
+    codigo: "HM001",
+    orden: 01,
+    categoria: "betta",
+    variedad: "Halfmoon Blue Metalic",
+    estado: "disponible",
+    sexo: "Macho",
+    precio: 50,
+    precioAnterior: null,
+    descripcion: "",
+    videoLocal: "",
+    videoTikTok: "",
+  },
+  {
+    codigo: "W001",
+    orden: 05,
+    categoria: "betta",
+    variedad: "Betta Splendens Wild Type Red – Spade Tail",
+    estado: "disponible",
+    sexo: "Macho",
+    precio: 40,
+    precioAnterior: null,
+    descripcion: "",
+    videoLocal: "",
+    videoTikTok: "",
+  },
+  {
+    codigo: "W002",
+    orden: 06,
+    categoria: "betta",
+    variedad: "Betta Splendens Wild Type Red – Spade Tail",
+    estado: "disponible",
+    sexo: "Macho",
+    precio: 42,
+    precioAnterior: null,
+    descripcion: "",
+    videoLocal: "",
+    videoTikTok: "",
+  },
+  {
+    codigo: "G001",
+    orden: 50,
+    categoria: "betta",
+    variedad: "HMPK Gigant Nemo",
+    estado: "disponible",
+    sexo: "Macho",
+    precio: 53,
+    precioAnterior: 60,
+    descripcion: "Tamaño 6.5-7.5cm",
+    videoLocal: "",
+    videoTikTok: "",
+  },
+  {
     codigo: "KOI001",
-    orden: 1,
+    orden: 51,
     categoria: "betta",
     variedad: "KOI Metalico",
     estado: "disponible",
@@ -58,7 +110,7 @@ const BETTAS = [
   },
   {
     codigo: "KOI002",
-    orden: 2,
+    orden: 52,
     categoria: "betta",
     variedad: "KOI Metalico",
     estado: "disponible",
@@ -71,7 +123,7 @@ const BETTAS = [
   },
   {
     codigo: "HM002",
-    orden: 3,
+    orden: 53,
     categoria: "betta",
     variedad: "Halfmoon",
     estado: "disponible",
@@ -84,7 +136,7 @@ const BETTAS = [
   },
   {
     codigo: "HB001",
-    orden: 4,
+    orden: 496,
     categoria: "betta",
     variedad: "Hell Boy",
     estado: "vendido",
@@ -97,7 +149,7 @@ const BETTAS = [
   },
   {
     codigo: "HB002",
-    orden: 5,
+    orden: 497,
     categoria: "betta",
     variedad: "Hell Boy",
     estado: "vendido",
@@ -110,7 +162,7 @@ const BETTAS = [
   },
   {
     codigo: "CN001",
-    orden: 6,
+    orden: 498,
     categoria: "betta",
     variedad: "Candy Metalico",
     estado: "vendido",
@@ -123,7 +175,7 @@ const BETTAS = [
   },
   {
     codigo: "CT001",
-    orden: 7,
+    orden: 499,
     categoria: "betta",
     variedad: "Crowntail",
     estado: "vendido",
@@ -156,7 +208,7 @@ const PAREJAS = [
 const ACCESORIOS = [
   {
     codigo: "AV001",
-    orden: 20,
+    orden: 550,
     categoria: "accesorio",
     tipoAccesorio: "betta-stick",
     nombre: "Varita para betta",
@@ -169,7 +221,7 @@ const ACCESORIOS = [
   },
   {
     codigo: "AV002",
-    orden: 21,
+    orden: 551,
     categoria: "accesorio",
     tipoAccesorio: "betta-stick",
     nombre: "Varita para betta roja",
@@ -182,7 +234,7 @@ const ACCESORIOS = [
   },
   {
     codigo: "APack001",
-    orden: 22,
+    orden: 552,
     categoria: "accesorio",
     tipoAccesorio: "acuario",
     nombre: "Acuario 20 x 20 x 25 kit completo",
@@ -193,7 +245,7 @@ const ACCESORIOS = [
     videoLocal: "",
     videoTikTok: "",
   },
-  {
+  /*{
     codigo: "A202025F",
     orden: 23,
     categoria: "accesorio",
@@ -296,5 +348,5 @@ const ACCESORIOS = [
     descripcion: "Filtro de 8W.",
     videoLocal: "",
     videoTikTok: "",
-  },
+  },*/
 ];
