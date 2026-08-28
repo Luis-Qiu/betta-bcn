@@ -1833,70 +1833,6 @@ h2 {
   margin-bottom: 22px;
 }
 
-.experiencia {
-  --cinema-progress: 0;
-  position: relative;
-  min-height: 132svh;
-  margin-top: -1px;
-  isolation: isolate;
-  background:
-    radial-gradient(circle at 50% calc(15% + (var(--cinema-progress) * 34%)), rgba(22, 119, 255, 0.19), transparent 34%),
-    linear-gradient(180deg, #02060d 0%, #071525 48%, #05080d 100%);
-}
-
-.experiencia::before {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background:
-    linear-gradient(115deg, transparent 0 38%, rgba(85, 168, 255, 0.08) 38.1% 38.4%, transparent 38.5%),
-    linear-gradient(245deg, transparent 0 52%, rgba(85, 168, 255, 0.06) 52.1% 52.35%, transparent 52.45%);
-  content: "";
-}
-
-.experiencia-sticky {
-  position: sticky;
-  top: 0;
-  min-height: 100svh;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  padding: 72px 0;
-}
-
-.experiencia-marco {
-  --cinema-scale: 0.72;
-  --cinema-y: 34px;
-  position: absolute;
-  inset: 8vh 5vw;
-  display: grid;
-  place-items: center;
-  opacity: calc(0.28 + (var(--cinema-progress) * 0.54));
-  pointer-events: none;
-}
-
-.experiencia-marco::before {
-  position: absolute;
-  width: min(64vw, 800px);
-  height: min(64vw, 800px);
-  border: 1px solid rgba(85, 168, 255, 0.15);
-  border-radius: 50%;
-  box-shadow:
-    0 0 0 90px rgba(22, 119, 255, 0.018),
-    0 0 100px rgba(22, 119, 255, 0.12);
-  content: "";
-}
-
-.experiencia-marco img {
-  width: min(78vw, 980px);
-  max-height: 76svh;
-  object-fit: contain;
-  transform: translate3d(0, var(--cinema-y), 0) scale(var(--cinema-scale));
-  filter:
-    drop-shadow(0 34px 64px rgba(0, 0, 0, 0.72))
-    drop-shadow(0 0 42px rgba(22, 119, 255, 0.2));
-}
-
 main {
   position: relative;
   background:
@@ -2074,8 +2010,7 @@ main {
   animation: flotar 7.5s ease-in-out infinite, zoomHero 20s ease-in-out infinite;
 }
 
-.hero-visual::after,
-.experiencia-marco::after {
+.hero-visual::after {
   position: absolute;
   z-index: 2;
   content: "";
@@ -2099,29 +2034,6 @@ main {
       0
     )
     scale(var(--scroll-scale));
-}
-
-.experiencia-marco .video-portada,
-.experiencia-marco .imagen-portada-fallback {
-  width: min(78vw, 980px);
-  height: min(76svh, 720px);
-  max-height: 76svh;
-  border-radius: 34px;
-  transform: translate3d(0, var(--cinema-y), 0) scale(var(--cinema-scale));
-  filter:
-    drop-shadow(0 34px 64px rgba(0, 0, 0, 0.72))
-    drop-shadow(0 0 42px rgba(22, 119, 255, 0.2));
-}
-
-.experiencia-marco::after {
-  width: min(78vw, 980px);
-  height: min(76svh, 720px);
-  max-height: 76svh;
-  border-radius: 34px;
-  background:
-    linear-gradient(180deg, rgba(2, 6, 13, 0.2), rgba(2, 6, 13, 0.5)),
-    radial-gradient(circle at 50% 40%, transparent 0 46%, rgba(2, 6, 13, 0.38) 100%);
-  transform: translate3d(0, var(--cinema-y), 0) scale(var(--cinema-scale));
 }
 
 @media (max-width: 900px) {
@@ -2643,23 +2555,6 @@ main {
     border-radius: 18px;
   }
 
-  .experiencia {
-    min-height: 112svh;
-  }
-
-  .experiencia-sticky {
-    padding: 54px 0;
-  }
-
-  .experiencia-marco {
-    inset: 10vh 0;
-  }
-
-  .experiencia-marco img {
-    width: 118vw;
-    max-height: 58svh;
-  }
-
   .visor {
     width: 100%;
     max-height: none;
@@ -2737,11 +2632,4 @@ main {
     height: 58svh;
   }
 
-  .experiencia-marco .video-portada,
-  .experiencia-marco .imagen-portada-fallback,
-  .experiencia-marco::after {
-    width: 118vw;
-    height: 58svh;
-    max-height: 58svh;
-  }
 }

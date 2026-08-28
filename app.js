@@ -20,9 +20,6 @@ const cerrarVideo = document.querySelector("#cerrar-video");
 const cabecera = document.querySelector(".cabecera");
 const heroVisual = document.querySelector(".hero-visual");
 const heroImagen = document.querySelector(".hero-visual .video-portada") || document.querySelector(".hero-visual img");
-const experiencia = document.querySelector(".experiencia");
-const experienciaMarco = document.querySelector(".experiencia-marco");
-const experienciaImagen = document.querySelector(".experiencia-marco .video-portada") || document.querySelector(".experiencia-marco img");
 
 const FORMATOS_IMAGEN = [
   "jpg",
@@ -688,18 +685,6 @@ function iniciarHeaderDinamico() {
       heroVisual.style.setProperty("--scroll-scale", scrollScale);
     }
 
-    if (experiencia && experienciaImagen) {
-      const caja = experiencia.getBoundingClientRect();
-      const rango = Math.max(experiencia.offsetHeight - window.innerHeight, 1);
-      const progreso = Math.min(Math.max((window.innerHeight - caja.top) / rango, 0), 1);
-      const cinemaScale = String(0.72 + progreso * 0.46);
-      const cinemaY = `${(1 - progreso) * 34}px`;
-      experienciaImagen.style.setProperty("--cinema-scale", cinemaScale);
-      experienciaImagen.style.setProperty("--cinema-y", cinemaY);
-      experienciaMarco?.style.setProperty("--cinema-scale", cinemaScale);
-      experienciaMarco?.style.setProperty("--cinema-y", cinemaY);
-      experiencia.style.setProperty("--cinema-progress", progreso.toFixed(3));
-    }
   };
   const solicitarActualizacion = () => {
     if (rafPendiente) return;
