@@ -56,6 +56,15 @@ if exist "%SOURCE%\README.md" (
   )
 )
 
+if exist "%SOURCE%\_headers" (
+  copy /Y "%SOURCE%\_headers" "%DEST%\_headers" >nul
+  if errorlevel 1 (
+    echo ERROR: No se pudo copiar _headers.
+    pause
+    exit /b 1
+  )
+)
+
 call :copiar_carpeta "imagenes"
 if errorlevel 1 exit /b 1
 

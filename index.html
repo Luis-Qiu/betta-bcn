@@ -313,7 +313,24 @@
       <p id="pie-video"></p>
     </dialog>
 
-    <script src="datos.js"></script>
-    <script src="app.js"></script>
+    <script>
+      (() => {
+        const cargarScript = (src) => new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = src;
+          script.onload = resolve;
+          script.onerror = reject;
+          document.body.appendChild(script);
+        });
+
+        const versionDatos = Date.now();
+        cargarScript(`datos.js?v=${versionDatos}`)
+          .then(() => cargarScript("app.js"))
+          .catch(() => {
+            console.error("No se pudo cargar el catálogo actualizado.");
+            cargarScript("app.js");
+          });
+      })();
+    </script>
   </body>
 </html>
