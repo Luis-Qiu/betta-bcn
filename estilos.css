@@ -520,7 +520,7 @@ h2 {
 
 .controles-catalogo {
   position: sticky;
-  top: 88px;
+  top: 74px;
   z-index: 15;
   display: grid;
   gap: 16px;
@@ -2292,7 +2292,7 @@ main {
   }
 
   .controles-catalogo {
-    top: 76px;
+    top: 66px;
     gap: 13px;
     margin-bottom: 22px;
     padding: 13px;
