@@ -723,7 +723,6 @@ function iniciarScrollReveal() {
     .confianza-lista li,
     .aviso-envio,
     .titulo-seccion,
-    .controles-catalogo,
     .tarjeta,
     .sin-resultados,
     .footer-marca,
