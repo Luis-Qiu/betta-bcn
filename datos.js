@@ -66,7 +66,7 @@ const BETTAS = [
     precio: 45,
     precioAnterior: null,
     descripcion: "",
-    videoLocal: "videos\KOI003.mp4 ",
+    videoLocal: "videos/KOI003.mp4 ",
     videoTikTok: "",
   },
   {
@@ -260,7 +260,7 @@ const ACCESORIOS = [
     videoTikTok: "",
   },
   {
-    codigo: "APack 001",
+    codigo: "APack001",
     orden: 2002,
     categoria: "accesorio",
     tipoAccesorio: "acuario",
