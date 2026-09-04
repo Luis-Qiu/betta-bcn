@@ -409,8 +409,8 @@ function textoBoton(producto) {
   const categoria = categoriaProducto(producto);
   const estado = estadoProducto(producto);
   if ((categoria === "betta" || categoria === "pareja") && estado === "vendido") return "Consultar ejemplares similares";
-  if (categoria === "accesorio") return "Consultar disponibilidad";
-  return "Consultar por WhatsApp";
+  if (categoria === "accesorio") return "WhatsApp";
+  return "WhatsApp";
 }
 
 async function crearTarjeta(producto) {
@@ -420,7 +420,7 @@ async function crearTarjeta(producto) {
   const vendido = (categoria === "betta" || categoria === "pareja") && estado === "vendido";
   const agotado = categoria === "accesorio" && estado === "agotado";
   const nombre = nombreProducto(producto);
-  const descripcion = String(producto.descripcion || "").trim() || (categoria === "accesorio" ? "Producto recomendado para el cuidado de bettas." : "Coloracion segun fotografias.");
+  const descripcion = String(producto.descripcion || "").trim();
   const videoLocal = typeof producto.videoLocal === "string" && producto.videoLocal.trim() ? producto.videoLocal.trim() : "";
   const videoTikTok = enlaceTikTokValido(producto.videoTikTok || producto.video);
   const fotosDetectadas = await detectarFotos(producto.codigo);
@@ -472,7 +472,7 @@ async function crearTarjeta(producto) {
           ? `<div><dt>Tipo</dt><dd>${tipoAccesorio(producto).replace("-", " ")}</dd></div>`
           : `<div><dt>${categoria === "pareja" ? "Composicion" : "Sexo"}</dt><dd>${producto.sexo || (categoria === "pareja" ? "Macho + Hembra" : "Macho")}</dd></div>`
         }
-        <div class="dato-descripcion"><dt>${categoria === "accesorio" ? "Descripcion" : "Color / descripcion"}</dt><dd>${descripcion}</dd></div>
+        ${descripcion ? `<div class="dato-descripcion"><dt>${categoria === "accesorio" ? "Descripcion" : "Color / descripcion"}</dt><dd>${descripcion}</dd></div>` : ""}
       </dl>
       <div class="entrega-info">
         <span>📦 Disponible para envio.</span>
@@ -480,7 +480,7 @@ async function crearTarjeta(producto) {
       </div>
       <div class="acciones-tarjeta">
         ${videoLocal ? `<button class="boton boton-video boton-video-local" type="button">Ver video</button>` : ""}
-        ${videoTikTok ? `<a class="boton boton-video" href="${videoTikTok}" target="_blank" rel="noopener noreferrer" aria-label="Ver video en TikTok de ${nombre}">Ver video en TikTok</a>` : ""}
+        ${videoTikTok ? `<a class="boton boton-video" href="${videoTikTok}" target="_blank" rel="noopener noreferrer" aria-label="Ver video en TikTok de ${nombre}">Ver video</a>` : ""}
         ${
           vendido
             ? `<button class="boton boton-deshabilitado" type="button" disabled>Vendido</button>`
