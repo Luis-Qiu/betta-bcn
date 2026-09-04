@@ -95,6 +95,34 @@ function nombreProducto(producto) {
   return String(producto.nombre || producto.variedad || producto.codigo).trim();
 }
 
+function etiquetaBetta(producto) {
+  const texto = normalizarTexto(`${producto.variedad || ""} ${producto.nombre || ""}`);
+  const esSalvaje = [
+    "splendens wild type",
+    "wild type",
+    "salvaje",
+    "mahachai",
+    "smaragdina",
+    "imbellis",
+    "macrostoma",
+    "albimarginata",
+    "channoides",
+    "hendra",
+    "rubra",
+    "persephone",
+    "coccina",
+    "unimaculata",
+  ].some((variedad) => texto.includes(variedad));
+
+  if (esSalvaje) return "SALVAJE";
+  if (/\bohm\b/.test(texto) || texto.includes("over halfmoon")) return "OHM";
+  if (/\bhmpk\b/.test(texto) || texto.includes("halfmoon plakat")) return "HMPK";
+  if (/\bct\b/.test(texto) || texto.includes("crowntail")) return "CT";
+  if (texto.includes("halfmoon")) return "HM";
+  if (/\bpk\b/.test(texto) || texto.includes("plakat")) return "PK";
+  return "BETTA";
+}
+
 function todosLosProductos() {
   const bettas = typeof BETTAS !== "undefined" && Array.isArray(BETTAS) ? BETTAS : [];
   const parejas = typeof PAREJAS !== "undefined" && Array.isArray(PAREJAS) ? PAREJAS : [];
@@ -427,6 +455,7 @@ async function crearTarjeta(producto) {
   const fotos = fotosDetectadas.length > 0 ? fotosDetectadas : ["imagenes/betta-destacado.svg"];
   const tieneGaleria = fotos.length > 1;
   const [textoEstado, claseEstado] = estadoVisual(producto);
+  const etiquetaSuperior = categoria === "accesorio" ? "Accesorio" : categoria === "pareja" ? "Pareja" : etiquetaBetta(producto);
   let fotoActual = 0;
   let inicioDeslizamiento = 0;
   let fueDeslizamiento = false;
@@ -459,7 +488,7 @@ async function crearTarjeta(producto) {
     </div>
     <div class="tarjeta-cuerpo">
       <div class="tarjeta-etiquetas">
-        <span class="variedad-etiqueta">${categoria === "accesorio" ? "Accesorio" : categoria === "pareja" ? "Pareja" : producto.variedad}</span>
+        <span class="variedad-etiqueta">${etiquetaSuperior}</span>
         <span class="estado ${claseEstado}"><span aria-hidden="true"></span> ${textoEstado}</span>
       </div>
       <div class="tarjeta-cabecera">
