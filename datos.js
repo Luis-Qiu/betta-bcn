@@ -146,7 +146,7 @@ const BETTAS = [
     videoLocal: "",
     videoTikTok: "",
   },
-  {
+  /*{
     codigo: "R26550830",
     orden: 55,
     categoria: "betta",
@@ -159,7 +159,7 @@ const BETTAS = [
     descripcion: "Coloracion segun fotografias.",
     videoLocal: "",
     videoTikTok: "",
-  },
+  },*/
   {
     codigo: "R26560830",
     orden: 56,
@@ -387,6 +387,20 @@ const BETTAS = [
     precio: 145,
     precioAnterior: null,
     descripcion: "Calidad S+",
+    videoLocal: "",
+    videoTikTok: "",
+  },
+  {
+    codigo: "R26550830",
+    orden: 4504,
+    categoria: "betta",
+    tipo: "HMPK",
+    variedad: "Royal Blue Metallic",
+    estado: "vendido",
+    sexo: "Macho",
+    precio: 48,
+    precioAnterior: null,
+    descripcion: "Coloracion segun fotografias.",
     videoLocal: "",
     videoTikTok: "",
   },
