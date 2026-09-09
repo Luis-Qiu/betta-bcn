@@ -370,7 +370,7 @@ const BETTAS = [
     videoLocal: "",
     videoTikTok: "",
   },
-  {
+  /*{
     codigo: "HM002",
     orden: 1499,
     categoria: "betta",
@@ -383,7 +383,7 @@ const BETTAS = [
     descripcion: "Coloracion segun fotografias.",
     videoLocal: "",
     videoTikTok: "",
-  },
+  },*/
   //------------------------------------------------------------------------------------------------------------------------------------------------------------
   //------------------------------------------------------------------------------------------------------------------------------------------------------------
   //------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -623,6 +623,20 @@ const PAREJAS = [
     precio: 145,
     precioAnterior: null,
     descripcion: "Pareja 24K Gold Calidad A+. Perfecto para criar",
+    videoLocal: "",
+    videoTikTok: "",
+  },
+  {
+    codigo: "HM002",
+    orden: 4401,
+    categoria: "betta",
+    tipo: "HM",
+    variedad: "Halfmoon",
+    estado: "vendido",
+    sexo: "Macho",
+    precio: 40,
+    precioAnterior: 45,
+    descripcion: "Coloracion segun fotografias.",
     videoLocal: "",
     videoTikTok: "",
   },
