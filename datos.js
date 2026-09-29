@@ -101,7 +101,7 @@ const BETTAS = [
     precio: 35,
     precioAnterior: null,
     descripcion: "Coloracion segun fotografias.",
-    videoLocal: "videos/H26040928.mov",
+    videoLocal: "videos/H26040928.mp4",
     videoTikTok: "",
   },
   {
@@ -129,7 +129,7 @@ const BETTAS = [
     precio: 35,
     precioAnterior: null,
     descripcion: "Coloracion segun fotografias.",
-    videoLocal: "videos/R26060929.mov",
+    videoLocal: "videos/R26060929.mp4",
     videoTikTok: "",
   },
   {
@@ -143,7 +143,7 @@ const BETTAS = [
     precio: 35,
     precioAnterior: null,
     descripcion: "Coloracion segun fotografias.",
-    videoLocal: "videos/R26070929.mov",
+    videoLocal: "videos/R26070929.mp4",
     videoTikTok: "",
   },
   {
@@ -171,7 +171,7 @@ const BETTAS = [
     precio: 33,
     precioAnterior: 38,
     descripcion: "Macho Super Red ENVIO ALEATORIO",
-    videoLocal: "videos/R26500830.mp4",
+    videoLocal: "imagenes/R26500830.mp4",
     videoTikTok: "",
   },
   {
@@ -298,7 +298,7 @@ const BETTAS = [
     precio: 45,
     precioAnterior: null,
     descripcion: "Coloracion segun fotografias.",
-    videoLocal: "videos/S26590909.mp4",
+    videoLocal: "imagenes/S26590909.mp4",
     videoTikTok: "",
   },
   {
@@ -312,7 +312,7 @@ const BETTAS = [
     precio: 45,
     precioAnterior: null,
     descripcion: "Coloracion segun fotografias.",
-    videoLocal: "videos/R26600909.mp4",
+    videoLocal: "imagenes/R26600909.mp4",
     videoTikTok: "",
   },
   {
@@ -326,7 +326,7 @@ const BETTAS = [
     precio: 50,
     precioAnterior: null,
     descripcion: "Coloracion segun fotografias.",
-    videoLocal: "videos/M26610909.mp4",
+    videoLocal: "imagenes/M26610909.mp4",
     videoTikTok: "",
   },
   {
@@ -667,7 +667,7 @@ const BETTAS = [
     precio: 45,
     precioAnterior: null,
     descripcion: "Coloracion segun fotografias.",
-    videoLocal: "videos/S26590909.mp4",
+    videoLocal: "imagenes/S26590909.mp4",
     videoTikTok: "",
   },
   {
@@ -681,7 +681,7 @@ const BETTAS = [
     precio: 45,
     precioAnterior: null,
     descripcion: "Coloracion segun fotografias.",
-    videoLocal: "videos/R26600909.mp4",
+    videoLocal: "imagenes/R26600909.mp4",
     videoTikTok: "",
   },
   {
@@ -695,7 +695,7 @@ const BETTAS = [
     precio: 50,
     precioAnterior: null,
     descripcion: "Coloracion segun fotografias.",
-    videoLocal: "videos/M26610909.mp4",
+    videoLocal: "imagenes/M26610909.mp4",
     videoTikTok: "",
   },
   {
@@ -767,7 +767,7 @@ const PAREJAS = [
     precio: 60,
     precioAnterior: 65,
     descripcion: "Pareja Super Red ENVIO ALEATORIO.",
-    videoLocal: "videos/P2615000830.mp4",
+    videoLocal: "imagenes/P2615000830.mp4",
     videoTikTok: "",
   },
   {
@@ -793,7 +793,7 @@ const PAREJAS = [
     precio: 72,
     precioAnterior: 78,
     descripcion: "PAREJA SUPER RED ENVIO ALEATORIO.",
-    videoLocal: "videos/P2615020830.mp4",
+    videoLocal: "imagenes/P2615020830.mp4",
     videoTikTok: "",
   },
   /*{
@@ -806,7 +806,7 @@ const PAREJAS = [
     precio: 78,
     precioAnterior: null,
     descripcion: "Betta Vientian",
-    videoLocal: "videos/P2615030909.mp4",
+    videoLocal: "imagenes/P2615030909.mp4",
     videoTikTok: "",
   },*/
   
