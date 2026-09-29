@@ -101,7 +101,7 @@ const BETTAS = [
     precio: 35,
     precioAnterior: null,
     descripcion: "Coloracion segun fotografias.",
-    videoLocal: "videos/H26040928.mov",
+    videoLocal: "videos/H26040928.mp4",
     videoTikTok: "",
   },
   {
@@ -129,7 +129,7 @@ const BETTAS = [
     precio: 35,
     precioAnterior: null,
     descripcion: "Coloracion segun fotografias.",
-    videoLocal: "videos/R26060929.mov",
+    videoLocal: "videos/R26060929.mp4",
     videoTikTok: "",
   },
   {
@@ -143,7 +143,7 @@ const BETTAS = [
     precio: 35,
     precioAnterior: null,
     descripcion: "Coloracion segun fotografias.",
-    videoLocal: "videos/R26070929.mov",
+    videoLocal: "videos/R26070929.mp4",
     videoTikTok: "",
   },
   {
