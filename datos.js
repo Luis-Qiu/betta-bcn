@@ -90,7 +90,7 @@ const BETTAS = [
     videoLocal: "",
     videoTikTok: "",
   },
-  {
+  /*{
     codigo: "H26040928",
     orden: 04,
     categoria: "betta",
@@ -103,7 +103,7 @@ const BETTAS = [
     descripcion: "Coloracion segun fotografias.",
     videoLocal: "videos/H26040928.mp4",
     videoTikTok: "",
-  },
+  },*/
   {
     codigo: "B26050928",
     orden: 05,
@@ -370,7 +370,7 @@ const BETTAS = [
     descripcion: "",
     videoLocal: "",
     videoTikTok: "",
-  },*/
+  },
   {
     codigo: "G002",
     orden: 999,
@@ -384,7 +384,7 @@ const BETTAS = [
     descripcion: "Tamaño 6-7cm",
     videoLocal: "",
     videoTikTok: "",
-  },
+  },*/
   {
     codigo: "G001",
     orden: 1000,
@@ -737,6 +737,34 @@ const BETTAS = [
     precio: 42,
     precioAnterior: null,
     descripcion: "",
+    videoLocal: "",
+    videoTikTok: "",
+  },
+  {
+    codigo: "H26040928",
+    orden: 4512,
+    categoria: "betta",
+    tipo: "HM",
+    variedad: "Pearl Turquoise",
+    estado: "vendido",
+    sexo: "Macho",
+    precio: 35,
+    precioAnterior: null,
+    descripcion: "Coloracion segun fotografias.",
+    videoLocal: "videos/H26040928.mp4",
+    videoTikTok: "",
+  },
+  {
+    codigo: "G002",
+    orden: 4514,
+    categoria: "betta",
+    tipo: "HMPK",
+    variedad: "GIGANT Super Red",
+    estado: "vendido",
+    sexo: "Macho",
+    precio: 50,
+    precioAnterior: 60,
+    descripcion: "Tamaño 6-7cm",
     videoLocal: "",
     videoTikTok: "",
   },
