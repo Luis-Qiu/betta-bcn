@@ -53,7 +53,7 @@ const BETTAS = [
     orden: 01,
     categoria: "betta",
     tipo: "",
-    variedad: "HEMBRA ENVIO ALEATORIO",
+    variedad: "MACHO ENVIO ALEATORIO",
     estado: "disponible",
     sexo: "Macho",
     precio: 15,
@@ -132,7 +132,7 @@ const BETTAS = [
     videoLocal: "videos/R26060929.mp4",
     videoTikTok: "",
   },
-  {
+  /*{
     codigo: "R26070929",
     orden: 07,
     categoria: "betta",
@@ -145,7 +145,7 @@ const BETTAS = [
     descripcion: "Coloracion segun fotografias.",
     videoLocal: "videos/R26070929.mp4",
     videoTikTok: "",
-  },
+  },*/
   {
     codigo: "S26490928",
     orden: 49,
@@ -752,6 +752,20 @@ const BETTAS = [
     precioAnterior: null,
     descripcion: "Coloracion segun fotografias.",
     videoLocal: "videos/H26040928.mp4",
+    videoTikTok: "",
+  },
+  {
+    codigo: "R26070929",
+    orden: 4513,
+    categoria: "betta",
+    tipo: "HM",
+    variedad: "Rosetail Pastel Gold Blue",
+    estado: "vendido",
+    sexo: "Macho",
+    precio: 50,
+    precioAnterior: null,
+    descripcion: "Coloracion segun fotografias.",
+    videoLocal: "videos/R26070929.mp4",
     videoTikTok: "",
   },
   {
